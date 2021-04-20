@@ -12,6 +12,7 @@ import com.github.messenger4j.send.MessagingType;
 import com.github.messenger4j.send.NotificationType;
 import com.github.messenger4j.send.message.TextMessage;
 import com.github.messenger4j.send.recipient.IdRecipient;
+import com.github.messenger4j.userprofile.UserProfile;
 import com.github.messenger4j.webhook.event.TextMessageEvent;
 
 
@@ -89,9 +90,7 @@ public class CallBackHandle {
 	private void handleMessage(TextMessageEvent event) throws MessengerIOException, MessengerApiException{
 		final String senderId = event.senderId();
 		final UserProfile userProfile = messenger.queryUserProfile(senderId);
-		logger.info("User Profile Picture: {}", userProfile.profilePicture());
-		String str = userProfile.profilePicture();
-		sendTextMessageUser(senderId,str);
+		sendTextMessageUser(senderId, String.format("Your name is %s and you are %s and picture is %s", userProfile.firstName(), userProfile.gender(), userProfile.profilePicture()));
 	}
 
 }
