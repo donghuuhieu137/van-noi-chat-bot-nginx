@@ -88,7 +88,7 @@ public class CallBackHandle {
 
 	private void handleMessage(TextMessageEvent event) throws MessengerIOException, MessengerApiException{
 		final String senderId = event.senderId();
-		sendTextMessageUser(senderId,"Hello, I'm Hank");
+		sendTextMessageUser(senderId,event.text());
 	}
 
 }
