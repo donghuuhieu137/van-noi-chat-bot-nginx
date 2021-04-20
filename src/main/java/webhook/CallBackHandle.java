@@ -1,5 +1,8 @@
 package webhook;
-
+import static com.github.messenger4j.Messenger.CHALLENGE_REQUEST_PARAM_NAME;
+import static com.github.messenger4j.Messenger.MODE_REQUEST_PARAM_NAME;
+import static com.github.messenger4j.Messenger.SIGNATURE_HEADER_NAME;
+import static com.github.messenger4j.Messenger.VERIFY_TOKEN_REQUEST_PARAM_NAME;
 import com.github.messenger4j.Messenger;
 import com.github.messenger4j.exception.MessengerApiException;
 import com.github.messenger4j.exception.MessengerIOException;
@@ -33,9 +36,9 @@ public class CallBackHandle {
     }
 
     @GetMapping
-    public ResponseEntity<String> verifyWebHook(@RequestParam("mode") final String mode,
-                                                @RequestParam("verifyToken") final String verifyToken,
-                                                @RequestParam("challenge") final String challenge){
+    public ResponseEntity<String> verifyWebHook(@RequestParam(MODE_REQUEST_PARAM_NAME) final String mode,
+                                                @RequestParam(VERIFY_TOKEN_REQUEST_PARAM_NAME) final String verifyToken,
+                                                @RequestParam(CHALLENGE_REQUEST_PARAM_NAME) final String challenge){
         logger.debug("Received Webhook verification request - mode: {} | verifyToken: {} | challenge: {}", mode, verifyToken, challenge);
         try {
             this.messenger.verifyWebhook(mode, verifyToken);
@@ -47,7 +50,7 @@ public class CallBackHandle {
     }
 
     @PostMapping
-    public ResponseEntity<Void> sendMessenger(@RequestBody final String payload, @RequestHeader("signature") String signature) throws MessengerVerificationException{
+    public ResponseEntity<Void> sendMessenger(@RequestBody final String payload, @RequestHeader(SIGNATURE_HEADER_NAME) String signature) throws MessengerVerificationException{
 
 		this.messenger.onReceiveEvents(payload, Optional.of(signature), event -> {
 		    if (event.isTextMessageEvent()) {
