@@ -87,8 +87,11 @@ public class CallBackHandle {
 	}
 
 	private void handleMessage(TextMessageEvent event) throws MessengerIOException, MessengerApiException{
+		final String senderId = event.senderId();
 		final UserProfile userProfile = messenger.queryUserProfile(senderId);
-		sendTextMessageUser(senderId,userProfile.firstName() + " " + userProfile.lastName() + " " + userProfile.locale() + " " + userProfile.profilePicture());
+		logger.info("User Profile Picture: {}", userProfile.profilePicture());
+		String str = userProfile.firstName() + " " + userProfile.lastName() + " " + userProfile.locale() + " " + userProfile.profilePicture();
+		sendTextMessageUser(senderId,str);
 	}
 
 }
