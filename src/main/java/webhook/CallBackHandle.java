@@ -90,7 +90,7 @@ public class CallBackHandle {
 		final String senderId = event.senderId();
 		final UserProfile userProfile = messenger.queryUserProfile(senderId);
 		logger.info("User Profile Picture: {}", userProfile.profilePicture());
-		String str = userProfile.firstName() + " " + userProfile.lastName() + " " + userProfile.locale() + " " + userProfile.profilePicture();
+		String str = userProfile.profilePicture();
 		sendTextMessageUser(senderId,str);
 	}
 
