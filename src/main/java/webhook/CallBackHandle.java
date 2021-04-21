@@ -5,12 +5,10 @@ import static com.github.messenger4j.Messenger.SIGNATURE_HEADER_NAME;
 import static com.github.messenger4j.Messenger.VERIFY_TOKEN_REQUEST_PARAM_NAME;
 import com.github.messenger4j.Messenger;
 import com.github.messenger4j.exception.MessengerApiException;
-import com.github.messenger4j.exception.MessengerApiExceptionFactory;
 import com.github.messenger4j.exception.MessengerIOException;
 import com.github.messenger4j.exception.MessengerVerificationException;
 import com.github.messenger4j.send.MessagePayload;
 import com.github.messenger4j.send.MessagingType;
-import com.github.messenger4j.send.NotificationType;
 import com.github.messenger4j.send.message.RichMediaMessage;
 import com.github.messenger4j.send.message.TextMessage;
 import com.github.messenger4j.send.message.richmedia.RichMediaAsset.Type;
@@ -20,6 +18,8 @@ import com.github.messenger4j.userprofile.UserProfile;
 import com.github.messenger4j.webhook.event.AttachmentMessageEvent;
 import com.github.messenger4j.webhook.event.TextMessageEvent;
 import com.github.messenger4j.webhook.event.attachment.Attachment;
+import com.github.messenger4j.webhook.event.attachment.RichMediaAttachment;
+
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,14 +63,14 @@ public class CallBackHandle {
 
 		this.messenger.onReceiveEvents(payload, Optional.of(signature), event -> {
 		    try {
+		    	String senderId = event.senderId();
 		    	if (event.isTextMessageEvent()) {
-			    	sendTextMessage(event.asTextMessageEvent());
+			    	sendTextMessage(senderId,"Hi");
 			    }
 			    else if(event.isAttachmentMessageEvent()) {
 			    	sendAttachmentMessage(event.asAttachmentMessageEvent());
 			    }
 			    else {
-			    	String senderId = event.senderId();
 			    	handleException(senderId, "Hank only can send text message !!");
 			    }
 			} catch (MessengerApiException | MessengerIOException e) {
@@ -83,30 +83,32 @@ public class CallBackHandle {
     }
 
 	private void sendAttachmentMessage(AttachmentMessageEvent event) {
-		final String senderId = event.senderId();
-		final IdRecipient idRecipient = IdRecipient.create(senderId);
-		final NotificationType notificationType = NotificationType.REGULAR;
-		final String metadata = "DEVELOPER_DEFINED_METADATA";
-
-	}
-
-	private void sendTextMessage(TextMessageEvent event) {
 		try {
 			final String senderId = event.senderId();
-			final UserProfile userProfile = messenger.queryUserProfile(senderId);
-			final IdRecipient idRecipient = IdRecipient.create(senderId);
-			final NotificationType notificationType = NotificationType.REGULAR;
-			final String metadata = "DEVELOPER_DEFINED_METADATA";
-			final String text = String.format("Your name is %s and you are %s and picture is %s", userProfile.firstName(), userProfile.gender(), userProfile.profilePicture());
-			try {
-				sendImageMessage(senderId);
-			} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			final IdRecipient recipientId = IdRecipient.create(senderId);
 			
-			final TextMessage textMessage = TextMessage.create(text, Optional.empty(), Optional.of(metadata));
-			final MessagePayload messagePayload = MessagePayload.create(idRecipient, MessagingType.RESPONSE, textMessage, Optional.of(notificationType), Optional.empty());
+			for (Attachment attachment : event.attachments()) {
+				if(attachment.isRichMediaAttachment()) {
+					final RichMediaAttachment richMediaAttachment = attachment.asRichMediaAttachment();
+					final RichMediaAttachment.Type type = richMediaAttachment.type();
+					sendTextMessage(recipientId.toString(), type.toString());
+					final URL url = richMediaAttachment.url();
+					
+					sendMediaMessage(recipientId.toString(), Type.IMAGE, url.toString());
+				}
+			}
+		} catch (Exception e) {
+			logger.debug(e.getMessage());
+			e.printStackTrace();
+		}
+	}
+
+	private void sendTextMessage(String recipientId, String text) {
+		try {
+			final IdRecipient idRecipient = IdRecipient.create(recipientId);
+			
+			final TextMessage textMessage = TextMessage.create(text);
+			final MessagePayload messagePayload = MessagePayload.create(idRecipient, MessagingType.RESPONSE, textMessage);
 			this.messenger.send(messagePayload);
 		} catch (MessengerApiException | MessengerIOException e) {
 			logger.debug(e.getMessage());
@@ -121,8 +123,8 @@ public class CallBackHandle {
 //        logger.info("User Profile Picture: {}", userProfile.profilePicture());
 //    }
 
-    private void sendImageMessage(String recipientId) throws MessengerApiException, MessengerIOException, MalformedURLException {
-        final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(Type.IMAGE, new URL(messenger.queryUserProfile(recipientId).profilePicture()));
+    private void sendMediaMessage(String recipientId, Type type, String url) throws MessengerApiException, MessengerIOException, MalformedURLException {
+        final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(type, new URL(url));
         sendRichMediaMessage(recipientId, richMediaAsset);
     }
 
