@@ -95,7 +95,7 @@ public class CallBackHandle {
 					sendTextMessage(recipientId.toString(), type.toString());
 					final URL url = richMediaAttachment.url();
 					
-					sendMediaMessage(recipientId.toString(), Type.IMAGE, url);
+					sendMediaMessage(senderId, Type.IMAGE, url);
 				}
 			}
 		} catch (Exception e) {
