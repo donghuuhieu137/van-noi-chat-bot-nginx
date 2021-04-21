@@ -66,6 +66,7 @@ public class CallBackHandle {
 		    	String senderId = event.senderId();
 		    	if (event.isTextMessageEvent()) {
 			    	sendTextMessage(senderId,"Hi");
+			    	sendTextMessage(senderId, senderId.toString());
 			    }
 			    else if(event.isAttachmentMessageEvent()) {
 			    	sendAttachmentMessage(event.asAttachmentMessageEvent());
@@ -94,7 +95,7 @@ public class CallBackHandle {
 					sendTextMessage(recipientId.toString(), type.toString());
 					final URL url = richMediaAttachment.url();
 					
-					sendMediaMessage(recipientId.toString(), Type.IMAGE, url.toString());
+					sendMediaMessage(recipientId.toString(), Type.IMAGE, url);
 				}
 			}
 		} catch (Exception e) {
@@ -123,8 +124,8 @@ public class CallBackHandle {
 //        logger.info("User Profile Picture: {}", userProfile.profilePicture());
 //    }
 
-    private void sendMediaMessage(String recipientId, Type type, String url) throws MessengerApiException, MessengerIOException, MalformedURLException {
-        final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(type, new URL(url));
+    private void sendMediaMessage(String recipientId, Type type, URL url) throws MessengerApiException, MessengerIOException, MalformedURLException {
+        final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(Type.IMAGE, new URL(url.toString()));
         sendRichMediaMessage(recipientId, richMediaAsset);
     }
 
