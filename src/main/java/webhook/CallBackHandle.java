@@ -92,7 +92,7 @@ public class CallBackHandle {
 				if(attachment.isRichMediaAttachment()) {
 					final RichMediaAttachment richMediaAttachment = attachment.asRichMediaAttachment();
 					final RichMediaAttachment.Type type = richMediaAttachment.type();
-					sendTextMessage(recipientId.toString(), type.toString());
+					sendTextMessage(senderId, type.toString());
 					final URL url = richMediaAttachment.url();
 					
 					sendMediaMessage(senderId, Type.IMAGE, url);
@@ -125,7 +125,7 @@ public class CallBackHandle {
 //    }
 
     private void sendMediaMessage(String recipientId, Type type, URL url) throws MessengerApiException, MessengerIOException, MalformedURLException {
-        final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(Type.IMAGE, new URL(url.toString()));
+        final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(type, new URL(url.toString()));
         sendRichMediaMessage(recipientId, richMediaAsset);
     }
 
