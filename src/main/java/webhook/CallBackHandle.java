@@ -94,8 +94,14 @@ public class CallBackHandle {
 					final RichMediaAttachment.Type type = richMediaAttachment.type();
 					sendTextMessage(senderId, type.toString());
 					final URL url = richMediaAttachment.url();
-					
-					sendMediaMessage(senderId, Type.IMAGE, url);
+					if(type.toString() == "IMAGE")
+						sendMediaMessage(senderId, Type.IMAGE , url);
+					else if(type.toString() == "VIDEO")
+						sendMediaMessage(senderId, Type.VIDEO , url);
+					else if(type.toString() == "FILE")
+						sendMediaMessage(senderId, Type.FILE , url);
+					else if(type.toString() == "AUDIO")
+						sendMediaMessage(senderId, Type.AUDIO , url);
 				}
 			}
 		} catch (Exception e) {
