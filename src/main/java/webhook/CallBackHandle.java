@@ -97,7 +97,7 @@ public class CallBackHandle {
 			    }
 			    else if(event.isPostbackEvent()) {
 			    	String text = event.asPostbackEvent().payload().get().toString();
-			    	if(text.equalsIgnoreCase("Bắt đầu")==true)
+			    	if(text.equalsIgnoreCase("GET START")==true)
 			    		sendTextMessage(senderId, "started");
 			    	sendTextMessage(senderId, text);
 			    }
