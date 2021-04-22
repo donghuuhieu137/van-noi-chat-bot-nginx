@@ -81,19 +81,18 @@ public class CallBackHandle {
 		    	String senderId = event.senderId();
 		    	if (event.isTextMessageEvent()) {
 		    		if(event.asTextMessageEvent().text() == "/start") {
-//		    			sendQuickReply(senderId);
+		    			sendQuickReplyMessage(senderId);
 				    	sendTextMessage(senderId, "started");
 		    		}
 		    		else
 		    			sendTextMessage(senderId, event.asTextMessageEvent().text());
 			    	sendButtonMessage(senderId);
-//			    	sendQuickReply(senderId);
 			    }
 			    else if(event.isAttachmentMessageEvent()) {
 			    	sendAttachmentMessage(event.asAttachmentMessageEvent());
 			    }
 			    else if(event.isQuickReplyMessageEvent()) {
-			    	sendQuickRepyMessage(event.asQuickReplyMessageEvent());
+			    	sendQuickReplyMessage(event.asQuickReplyMessageEvent());
 			    }
 			    else if(event.isPostbackEvent()) {
 			    	String text = event.asPostbackEvent().payload().toString();
@@ -111,8 +110,8 @@ public class CallBackHandle {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-	private void sendQuickRepyMessage(QuickReplyMessageEvent event) {
-		// TODO Auto-generated method stub
+	private void sendQuickReplyMessage(QuickReplyMessageEvent event) {
+		sendTextMessage(event.senderId(), "Quickreplymessage");
 		
 	}
 
@@ -181,7 +180,7 @@ public class CallBackHandle {
 		this.messenger.send(payload);
 	}
 	
-	private void sendQuickReply(String recipientId) throws MessengerApiException, MessengerIOException {
+	private void sendQuickReplyMessage(String recipientId) throws MessengerApiException, MessengerIOException {
         List<QuickReply> quickReplies = new ArrayList<>();
 
         quickReplies.add(TextQuickReply.create("Action", "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_ACTION"));
@@ -194,7 +193,7 @@ public class CallBackHandle {
 	
 	private void sendButtonMessage(String recipientId) throws MessengerApiException, MessengerIOException, MalformedURLException {
         final List<Button> buttons = Arrays.asList(
-        		PostbackButton.create("Bắt đầu", "\start"),
+        		PostbackButton.create("Bat đau", "\start"),
                 UrlButton.create("Fanpage", new URL("https://www.facebook.com/Vân-Nội-Chatbot-102546638613653/"), Optional.of(WebviewHeightRatio.COMPACT), Optional.of(false), Optional.empty(), Optional.empty())
                 
         );
