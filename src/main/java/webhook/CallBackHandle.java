@@ -87,6 +87,7 @@ public class CallBackHandle {
 		    		else
 		    			sendTextMessage(senderId, event.asTextMessageEvent().text());
 			    	sendButtonMessage(senderId);
+	    			sendQuickReplyMessage(senderId);
 			    }
 			    else if(event.isAttachmentMessageEvent()) {
 			    	sendAttachmentMessage(event.asAttachmentMessageEvent());
