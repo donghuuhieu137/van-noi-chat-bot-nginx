@@ -55,6 +55,8 @@ public class CallBackHandle {
 
     private Messenger messenger;
 
+	private String o;
+
     public CallBackHandle(Messenger messenger) {
         this.messenger = messenger;
     }
@@ -97,11 +99,11 @@ public class CallBackHandle {
 			    else if(event.isPostbackEvent()) {
 			    	String text = event.asPostbackEvent().payload().get().toString();
 			    	if(text.equalsIgnoreCase("Bắt đầu"))
-			    		sendTextMessage(senderId, "started");;
+			    		sendTextMessage(senderId, "started");
 			    	sendTextMessage(senderId, text);
 			    }
 			    else {
-			    	handleException(senderId, "Hank only can send text message !!");
+			    	handleException(senderId, "EROR!!");
 			    }
 			} catch (MessengerApiException | MessengerIOException | MalformedURLException e) {
 				logger.debug(e.getMessage());
@@ -111,11 +113,6 @@ public class CallBackHandle {
 		
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-
-	private void sendQuickReplyMessage(QuickReplyMessageEvent event) {
-		sendTextMessage(event.senderId(), event.payload().toString());
-		
-	}
 
 	private void sendAttachmentMessage(AttachmentMessageEvent event) {
 		try {
@@ -182,14 +179,22 @@ public class CallBackHandle {
 		this.messenger.send(payload);
 	}
 	
+	private void sendQuickReplyMessage(QuickReplyMessageEvent event) {
+		String text = event.payload().toString();
+		sendTextMessage(event.senderId(),text);
+		if(text=="Đang tìm đối phương nam . . .")
+			sendTextMessage(event.senderId(),"Nam");
+		else if (text=="Đang tìm đối phương nữ . . .")
+			sendTextMessage(event.senderId(),"Nữ");
+	}	
+	
 	private void sendQuickReplyMessage(String recipientId) throws MessengerApiException, MessengerIOException {
         List<QuickReply> quickReplies = new ArrayList<>();
 
-        quickReplies.add(TextQuickReply.create("Action", "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_ACTION"));
-        quickReplies.add(TextQuickReply.create("Comedy", "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_COMEDY"));
-        quickReplies.add(TextQuickReply.create("Drama", "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_DRAMA"));
+        quickReplies.add(TextQuickReply.create("Nam", "Đang tìm đối phương nam . . ."));
+        quickReplies.add(TextQuickReply.create("Nữ", "Đang tìm đối phương nữ . . ."));
 
-        TextMessage message = TextMessage.create("What's your favorite movie genre?", Optional.of(quickReplies), Optional.empty());
+        TextMessage message = TextMessage.create("Bạn muốn tìm kiếm đối phương là nam hay nữ ?", Optional.of(quickReplies), Optional.empty());
         this.messenger.send(MessagePayload.create(recipientId, MessagingType.RESPONSE, message));
     }
 	
