@@ -4,15 +4,25 @@ import static com.github.messenger4j.Messenger.MODE_REQUEST_PARAM_NAME;
 import static com.github.messenger4j.Messenger.SIGNATURE_HEADER_NAME;
 import static com.github.messenger4j.Messenger.VERIFY_TOKEN_REQUEST_PARAM_NAME;
 import com.github.messenger4j.Messenger;
+import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.exception.MessengerApiException;
 import com.github.messenger4j.exception.MessengerIOException;
 import com.github.messenger4j.exception.MessengerVerificationException;
 import com.github.messenger4j.send.MessagePayload;
 import com.github.messenger4j.send.MessagingType;
 import com.github.messenger4j.send.message.RichMediaMessage;
+import com.github.messenger4j.send.message.TemplateMessage;
 import com.github.messenger4j.send.message.TextMessage;
+import com.github.messenger4j.send.message.quickreply.LocationQuickReply;
+import com.github.messenger4j.send.message.quickreply.QuickReply;
+import com.github.messenger4j.send.message.quickreply.TextQuickReply;
 import com.github.messenger4j.send.message.richmedia.RichMediaAsset.Type;
 import com.github.messenger4j.send.message.richmedia.UrlRichMediaAsset;
+import com.github.messenger4j.send.message.template.ButtonTemplate;
+import com.github.messenger4j.send.message.template.button.Button;
+import com.github.messenger4j.send.message.template.button.CallButton;
+import com.github.messenger4j.send.message.template.button.PostbackButton;
+import com.github.messenger4j.send.message.template.button.UrlButton;
 import com.github.messenger4j.send.recipient.IdRecipient;
 import com.github.messenger4j.userprofile.UserProfile;
 import com.github.messenger4j.webhook.event.AttachmentMessageEvent;
@@ -31,6 +41,9 @@ import org.springframework.web.bind.annotation.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -66,24 +79,10 @@ public class CallBackHandle {
 		this.messenger.onReceiveEvents(payload, Optional.of(signature), event -> {
 		    try {
 		    	String senderId = event.senderId();
-		    	if (event.isMessageEchoEvent()) {
-		    		handleEchoMessage(event.asMessageEchoEvent());
-		    	}
-		    	else if (event.isMessageReadEvent()) {
-			    	sendTextMessage(senderId,"Message Read Event");
-			    }
-		    	else if (event.isPostbackEvent()) {
-			    	sendTextMessage(senderId,"Message Post Back Event");
-			    }
-		    	else if (event.isQuickReplyMessageEvent()) {
-			    	sendTextMessage(senderId,"Message Quick Reply Event");
-			    }
-		    	else if (event.isReferralEvent()) {
-			    	sendTextMessage(senderId,"Message Referral Event");
-			    }
-		    	else if (event.isTextMessageEvent()) {
+		    	if (event.isTextMessageEvent()) {
 			    	sendTextMessage(senderId, event.asTextMessageEvent().text());
-			    	sendTextMessage(senderId, senderId.toString());
+			    	sendButtonMessage(senderId);
+			    	sendQuickReply(senderId);
 			    }
 			    else if(event.isAttachmentMessageEvent()) {
 			    	sendAttachmentMessage(event.asAttachmentMessageEvent());
@@ -91,7 +90,7 @@ public class CallBackHandle {
 			    else {
 			    	handleException(senderId, "Hank only can send text message !!");
 			    }
-			} catch (MessengerApiException | MessengerIOException e) {
+			} catch (MessengerApiException | MessengerIOException | MalformedURLException e) {
 				logger.debug(e.getMessage());
 				e.printStackTrace();
 			}
@@ -99,22 +98,6 @@ public class CallBackHandle {
 		
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-
-	private void handleEchoMessage(MessageEchoEvent event) {
-		logger.debug("Handling MessageEchoEvent");
-        final String senderId = event.senderId();
-        logger.debug("senderId: {}", senderId);
-        final String recipientId = event.recipientId();
-        logger.debug("recipientId: {}", recipientId);
-        final String messageId = event.messageId();
-        logger.debug("messageId: {}", messageId);
-        final Instant timestamp = event.timestamp();
-        logger.debug("timestamp: {}", timestamp);
-
-        logger.info("Received echo for message '{}' that has been sent to recipient '{}' by sender '{}' at '{}'", messageId, recipientId, senderId, timestamp);
-        sendTextMessage(senderId, "MessageEchoEvent tapped");
-		
-	}
 
 	private void sendAttachmentMessage(AttachmentMessageEvent event) {
 		try {
@@ -180,5 +163,28 @@ public class CallBackHandle {
 		final MessagePayload payload = MessagePayload.create(senderId,MessagingType.RESPONSE, textMessage);
 		this.messenger.send(payload);
 	}
+	
+	private void sendQuickReply(String recipientId) throws MessengerApiException, MessengerIOException {
+        List<QuickReply> quickReplies = new ArrayList<>();
 
+        quickReplies.add(TextQuickReply.create("Action", "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_ACTION"));
+        quickReplies.add(TextQuickReply.create("Comedy", "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_COMEDY"));
+        quickReplies.add(TextQuickReply.create("Drama", "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_DRAMA"));
+        quickReplies.add(LocationQuickReply.create());
+
+        TextMessage message = TextMessage.create("What's your favorite movie genre?", Optional.of(quickReplies), Optional.empty());
+        messenger.send(MessagePayload.create(recipientId, MessagingType.RESPONSE, message));
+    }
+	
+	private void sendButtonMessage(String recipientId) throws MessengerApiException, MessengerIOException, MalformedURLException {
+        final List<Button> buttons = Arrays.asList(
+                UrlButton.create("Open Web URL", new URL("https://www.oculus.com/en-us/rift/"), Optional.of(WebviewHeightRatio.COMPACT), Optional.of(false), Optional.empty(), Optional.empty()),
+                PostbackButton.create("Trigger Postback", "DEVELOPER_DEFINED_PAYLOAD"), CallButton.create("Call Phone Number", "+16505551234")
+        );
+
+        final ButtonTemplate buttonTemplate = ButtonTemplate.create("Tap a button", buttons);
+        final TemplateMessage templateMessage = TemplateMessage.create(buttonTemplate);
+        final MessagePayload messagePayload = MessagePayload.create(recipientId, MessagingType.RESPONSE, templateMessage);
+        this.messenger.send(messagePayload);
+    }
 }
