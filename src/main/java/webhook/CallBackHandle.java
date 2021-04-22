@@ -13,7 +13,6 @@ import com.github.messenger4j.send.MessagingType;
 import com.github.messenger4j.send.message.RichMediaMessage;
 import com.github.messenger4j.send.message.TemplateMessage;
 import com.github.messenger4j.send.message.TextMessage;
-import com.github.messenger4j.send.message.quickreply.LocationQuickReply;
 import com.github.messenger4j.send.message.quickreply.QuickReply;
 import com.github.messenger4j.send.message.quickreply.TextQuickReply;
 import com.github.messenger4j.send.message.richmedia.RichMediaAsset.Type;
