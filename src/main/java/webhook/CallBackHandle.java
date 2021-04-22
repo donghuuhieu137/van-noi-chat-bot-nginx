@@ -16,6 +16,7 @@ import com.github.messenger4j.send.message.richmedia.UrlRichMediaAsset;
 import com.github.messenger4j.send.recipient.IdRecipient;
 import com.github.messenger4j.userprofile.UserProfile;
 import com.github.messenger4j.webhook.event.AttachmentMessageEvent;
+import com.github.messenger4j.webhook.event.MessageEchoEvent;
 import com.github.messenger4j.webhook.event.TextMessageEvent;
 import com.github.messenger4j.webhook.event.attachment.Attachment;
 import com.github.messenger4j.webhook.event.attachment.RichMediaAttachment;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Instant;
 import java.util.Optional;
 
 
@@ -64,8 +66,23 @@ public class CallBackHandle {
 		this.messenger.onReceiveEvents(payload, Optional.of(signature), event -> {
 		    try {
 		    	String senderId = event.senderId();
-		    	if (event.isTextMessageEvent()) {
-			    	sendTextMessage(senderId,"Hi");
+		    	if (event.isMessageEchoEvent()) {
+		    		handleEchoMessage(event.asMessageEchoEvent());
+		    	}
+		    	else if (event.isMessageReadEvent()) {
+			    	sendTextMessage(senderId,"Message Read Event");
+			    }
+		    	else if (event.isPostbackEvent()) {
+			    	sendTextMessage(senderId,"Message Post Back Event");
+			    }
+		    	else if (event.isQuickReplyMessageEvent()) {
+			    	sendTextMessage(senderId,"Message Quick Reply Event");
+			    }
+		    	else if (event.isReferralEvent()) {
+			    	sendTextMessage(senderId,"Message Referral Event");
+			    }
+		    	else if (event.isTextMessageEvent()) {
+			    	sendTextMessage(senderId, event.asTextMessageEvent().text());
 			    	sendTextMessage(senderId, senderId.toString());
 			    }
 			    else if(event.isAttachmentMessageEvent()) {
@@ -82,6 +99,22 @@ public class CallBackHandle {
 		
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+	private void handleEchoMessage(MessageEchoEvent event) {
+		logger.debug("Handling MessageEchoEvent");
+        final String senderId = event.senderId();
+        logger.debug("senderId: {}", senderId);
+        final String recipientId = event.recipientId();
+        logger.debug("recipientId: {}", recipientId);
+        final String messageId = event.messageId();
+        logger.debug("messageId: {}", messageId);
+        final Instant timestamp = event.timestamp();
+        logger.debug("timestamp: {}", timestamp);
+
+        logger.info("Received echo for message '{}' that has been sent to recipient '{}' by sender '{}' at '{}'", messageId, recipientId, senderId, timestamp);
+        sendTextMessage(senderId, "MessageEchoEvent tapped");
+		
+	}
 
 	private void sendAttachmentMessage(AttachmentMessageEvent event) {
 		try {
@@ -109,7 +142,7 @@ public class CallBackHandle {
 			e.printStackTrace();
 		}
 	}
-
+	
 	private void sendTextMessage(String recipientId, String text) {
 		try {
 			final IdRecipient idRecipient = IdRecipient.create(recipientId);
