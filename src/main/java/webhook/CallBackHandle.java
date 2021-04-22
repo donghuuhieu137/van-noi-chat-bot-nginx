@@ -189,7 +189,6 @@ public class CallBackHandle {
         quickReplies.add(TextQuickReply.create("Action", "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_ACTION"));
         quickReplies.add(TextQuickReply.create("Comedy", "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_COMEDY"));
         quickReplies.add(TextQuickReply.create("Drama", "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_DRAMA"));
-        quickReplies.add(LocationQuickReply.create());
 
         TextMessage message = TextMessage.create("What's your favorite movie genre?", Optional.of(quickReplies), Optional.empty());
         messenger.send(MessagePayload.create(recipientId, MessagingType.RESPONSE, message));
