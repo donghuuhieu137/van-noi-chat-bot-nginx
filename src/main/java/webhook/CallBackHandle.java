@@ -188,12 +188,12 @@ public class CallBackHandle {
         quickReplies.add(TextQuickReply.create("Drama", "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_DRAMA"));
 
         TextMessage message = TextMessage.create("What's your favorite movie genre?", Optional.of(quickReplies), Optional.empty());
-        messenger.send(MessagePayload.create(recipientId, MessagingType.RESPONSE, message));
+        this.messenger.send(MessagePayload.create(recipientId, MessagingType.RESPONSE, message));
     }
 	
 	private void sendButtonMessage(String recipientId) throws MessengerApiException, MessengerIOException, MalformedURLException {
         final List<Button> buttons = Arrays.asList(
-        		PostbackButton.create("Bắt đầu","/start"),
+        		PostbackButton.create("Bắt đầu","hello"),
                 UrlButton.create("Fanpage", new URL("https://www.facebook.com/Vân-Nội-Chatbot-102546638613653/"), Optional.of(WebviewHeightRatio.COMPACT), Optional.of(false), Optional.empty(), Optional.empty())
                 
         );
