@@ -25,7 +25,6 @@ import com.github.messenger4j.send.message.template.button.UrlButton;
 import com.github.messenger4j.send.recipient.IdRecipient;
 import com.github.messenger4j.userprofile.UserProfile;
 import com.github.messenger4j.webhook.event.AttachmentMessageEvent;
-import com.github.messenger4j.webhook.event.MessageEchoEvent;
 import com.github.messenger4j.webhook.event.PostbackEvent;
 import com.github.messenger4j.webhook.event.QuickReplyMessageEvent;
 import com.github.messenger4j.webhook.event.TextMessageEvent;
@@ -98,12 +97,12 @@ public class CallBackHandle {
 			    }
 			    else if(event.isPostbackEvent()) {
 			    	String text = event.asPostbackEvent().payload().get().toString();
-			    	if(text.equalsIgnoreCase("Bắt đầu"))
+			    	if(text.equalsIgnoreCase("Bắt đầu")==true)
 			    		sendTextMessage(senderId, "started");
 			    	sendTextMessage(senderId, text);
 			    }
 			    else {
-			    	handleException(senderId, "EROR!!");
+			    	handleException(senderId, "ERROR!!");
 			    }
 			} catch (MessengerApiException | MessengerIOException | MalformedURLException e) {
 				logger.debug(e.getMessage());
@@ -117,7 +116,6 @@ public class CallBackHandle {
 	private void sendAttachmentMessage(AttachmentMessageEvent event) {
 		try {
 			final String senderId = event.senderId();
-			final IdRecipient recipientId = IdRecipient.create(senderId);
 			
 			for (Attachment attachment : event.attachments()) {
 				if(attachment.isRichMediaAttachment()) {
@@ -182,9 +180,9 @@ public class CallBackHandle {
 	private void sendQuickReplyMessage(QuickReplyMessageEvent event) {
 		String text = event.payload().toString();
 		sendTextMessage(event.senderId(),text);
-		if(text=="Đang tìm đối phương nam . . .")
+		if(text.equalsIgnoreCase("Đang tìm đối phương nam . . .")==true)
 			sendTextMessage(event.senderId(),"Nam");
-		else if (text=="Đang tìm đối phương nữ . . .")
+		else if (text.equalsIgnoreCase("Đang tìm đối phương nữ . . .")==true)
 			sendTextMessage(event.senderId(),"Nữ");
 	}	
 	
