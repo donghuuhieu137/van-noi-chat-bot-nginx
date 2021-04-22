@@ -193,8 +193,8 @@ public class CallBackHandle {
 	
 	private void sendButtonMessage(String recipientId) throws MessengerApiException, MessengerIOException, MalformedURLException {
         final List<Button> buttons = Arrays.asList(
-        		PostbackButton.create("Bat dau", "\start"),
-                UrlButton.create("Fanpage", new URL("https://www.facebook.com/Vân-Nội-Chatbot-102546638613653/"), Optional.of(WebviewHeightRatio.COMPACT), Optional.of(false), Optional.empty(), Optional.empty())
+                UrlButton.create("Fanpage", new URL("https://www.facebook.com/Vân-Nội-Chatbot-102546638613653/"), Optional.of(WebviewHeightRatio.COMPACT), Optional.of(false), Optional.empty(), Optional.empty()),
+                PostbackButton.create("Bat dau", "\start")
                 
         );
 
