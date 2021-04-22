@@ -82,12 +82,11 @@ public class CallBackHandle {
 		    	String senderId = event.senderId();
 		    	if (event.isTextMessageEvent()) {
 		    		if(event.asTextMessageEvent().text().equalsIgnoreCase("Bắt đầu")) {
-				    	sendTextMessage(senderId, "started");
+				    	sendQuickReplyMessage(senderId);
 		    		}
 		    		else
 		    			sendTextMessage(senderId, event.asTextMessageEvent().text());
 			    	sendButtonMessage(senderId);
-	    			sendQuickReplyMessage(senderId);
 			    }
 			    else if(event.isAttachmentMessageEvent()) {
 			    	sendAttachmentMessage(event.asAttachmentMessageEvent());
@@ -97,9 +96,10 @@ public class CallBackHandle {
 			    }
 			    else if(event.isPostbackEvent()) {
 			    	String text = event.asPostbackEvent().payload().get().toString();
-			    	if(text.equalsIgnoreCase("GET START")==true)
-			    		sendTextMessage(senderId, "started");
-			    	sendTextMessage(senderId, text);
+			    	if(text.equalsIgnoreCase("GET_START")==true)
+			    		sendQuickReplyMessage(senderId);
+			    	else if(text.equalsIgnoreCase("ABOUT_US")==true)
+			    		sendTextMessage(senderId,". . .");
 			    }
 			    else {
 			    	handleException(senderId, "ERROR!!");
@@ -192,15 +192,15 @@ public class CallBackHandle {
         quickReplies.add(TextQuickReply.create("Nam", "Đang tìm đối phương nam . . ."));
         quickReplies.add(TextQuickReply.create("Nữ", "Đang tìm đối phương nữ . . ."));
 
-        TextMessage message = TextMessage.create("Bạn muốn tìm kiếm đối phương là nam hay nữ ?", Optional.of(quickReplies), Optional.empty());
+        TextMessage message = TextMessage.create("Bạn muốn tìm kiếm đối phương nam hay nữ ?", Optional.of(quickReplies), Optional.empty());
         this.messenger.send(MessagePayload.create(recipientId, MessagingType.RESPONSE, message));
     }
 	
 	private void sendButtonMessage(String recipientId) throws MessengerApiException, MessengerIOException, MalformedURLException {
         final List<Button> buttons = Arrays.asList(
-        		PostbackButton.create("Bắt đầu","GET START"),
-                UrlButton.create("Fanpage", new URL("https://www.facebook.com/Vân-Nội-Chatbot-102546638613653/"), Optional.of(WebviewHeightRatio.COMPACT), Optional.of(false), Optional.empty(), Optional.empty())
-                
+        		PostbackButton.create("Bắt đầu","GET_START"),
+                UrlButton.create("Fanpage", new URL("https://www.facebook.com/Vân-Nội-Chatbot-102546638613653/"), Optional.of(WebviewHeightRatio.COMPACT), Optional.of(false), Optional.empty(), Optional.empty()),
+                PostbackButton.create("Thông tin thêm","ABOUT_US")
         );
 
         final ButtonTemplate buttonTemplate = ButtonTemplate.create("Chat với người lạ\r\n" + 
