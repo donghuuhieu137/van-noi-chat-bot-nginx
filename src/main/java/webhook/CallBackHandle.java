@@ -80,7 +80,7 @@ public class CallBackHandle {
 		    try {
 		    	String senderId = event.senderId();
 		    	if (event.isTextMessageEvent()) {
-		    		if(event.asTextMessageEvent().text() == "/start") {
+		    		if(event.asTextMessageEvent().text() == "Bắt đầu") {
 		    			sendQuickReplyMessage(senderId);
 				    	sendTextMessage(senderId, "started");
 		    		}
@@ -194,7 +194,7 @@ public class CallBackHandle {
 	
 	private void sendButtonMessage(String recipientId) throws MessengerApiException, MessengerIOException, MalformedURLException {
         final List<Button> buttons = Arrays.asList(
-        		PostbackButton.create("Bắt đầu","start"),
+        		PostbackButton.create("Bắt đầu","GET START"),
                 UrlButton.create("Fanpage", new URL("https://www.facebook.com/Vân-Nội-Chatbot-102546638613653/"), Optional.of(WebviewHeightRatio.COMPACT), Optional.of(false), Optional.empty(), Optional.empty())
                 
         );
