@@ -95,7 +95,7 @@ public class CallBackHandle {
 			    	sendQuickReplyMessage(event.asQuickReplyMessageEvent());
 			    }
 			    else if(event.isPostbackEvent()) {
-			    	String text = event.asPostbackEvent().payload().get();
+			    	String text = event.asPostbackEvent().payload().get().toString();
 			    	if(text.equalsIgnoreCase("Bắt đầu"))
 			    		sendTextMessage(senderId, "started");;
 			    	sendTextMessage(senderId, text);
@@ -113,7 +113,7 @@ public class CallBackHandle {
     }
 
 	private void sendQuickReplyMessage(QuickReplyMessageEvent event) {
-		sendTextMessage(event.senderId(), "Quickreplymessage");
+		sendTextMessage(event.senderId(), event.payload().toString());
 		
 	}
 
