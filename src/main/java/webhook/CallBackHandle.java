@@ -27,6 +27,8 @@ import com.github.messenger4j.send.recipient.IdRecipient;
 import com.github.messenger4j.userprofile.UserProfile;
 import com.github.messenger4j.webhook.event.AttachmentMessageEvent;
 import com.github.messenger4j.webhook.event.MessageEchoEvent;
+import com.github.messenger4j.webhook.event.PostbackEvent;
+import com.github.messenger4j.webhook.event.QuickReplyMessageEvent;
 import com.github.messenger4j.webhook.event.TextMessageEvent;
 import com.github.messenger4j.webhook.event.attachment.Attachment;
 import com.github.messenger4j.webhook.event.attachment.RichMediaAttachment;
@@ -75,17 +77,29 @@ public class CallBackHandle {
 
     @PostMapping
     public ResponseEntity<Void> sendMessenger(@RequestBody final String payload, @RequestHeader(SIGNATURE_HEADER_NAME) String signature) throws MessengerVerificationException{
-
+    	
 		this.messenger.onReceiveEvents(payload, Optional.of(signature), event -> {
 		    try {
 		    	String senderId = event.senderId();
 		    	if (event.isTextMessageEvent()) {
-			    	sendTextMessage(senderId, event.asTextMessageEvent().text());
+		    		if(event.asTextMessageEvent().text() == "/start") {
+		    			sendQuickReply(senderId);
+				    	sendTextMessage(senderId, "started");
+		    		}
+		    		else
+		    			sendTextMessage(senderId, event.asTextMessageEvent().text());
 			    	sendButtonMessage(senderId);
 			    	sendQuickReply(senderId);
 			    }
 			    else if(event.isAttachmentMessageEvent()) {
 			    	sendAttachmentMessage(event.asAttachmentMessageEvent());
+			    }
+			    else if(event.isQuickReplyMessageEvent()) {
+			    	sendQuickRepyMessage(event.asQuickReplyMessageEvent());
+			    }
+			    else if(event.isPostbackEvent()) {
+			    	String text = event.asPostbackEvent().payload().toString();
+			    	sendTextMessage(senderId, text);
 			    }
 			    else {
 			    	handleException(senderId, "Hank only can send text message !!");
@@ -98,6 +112,11 @@ public class CallBackHandle {
 		
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+	private void sendQuickRepyMessage(QuickReplyMessageEvent event) {
+		// TODO Auto-generated method stub
+		
+	}
 
 	private void sendAttachmentMessage(AttachmentMessageEvent event) {
 		try {
@@ -178,11 +197,13 @@ public class CallBackHandle {
 	
 	private void sendButtonMessage(String recipientId) throws MessengerApiException, MessengerIOException, MalformedURLException {
         final List<Button> buttons = Arrays.asList(
-                UrlButton.create("Open Web URL", new URL("https://www.oculus.com/en-us/rift/"), Optional.of(WebviewHeightRatio.COMPACT), Optional.of(false), Optional.empty(), Optional.empty()),
-                PostbackButton.create("Trigger Postback", "DEVELOPER_DEFINED_PAYLOAD"), CallButton.create("Call Phone Number", "+16505551234")
+        		PostbackButton.create("Bắt đầu", "\start"),
+                UrlButton.create("Fanpage", new URL("https://www.facebook.com/Vân-Nội-Chatbot-102546638613653/"), Optional.of(WebviewHeightRatio.COMPACT), Optional.of(false), Optional.empty(), Optional.empty())
+                
         );
 
-        final ButtonTemplate buttonTemplate = ButtonTemplate.create("Tap a button", buttons);
+        final ButtonTemplate buttonTemplate = ButtonTemplate.create("Chat với người lạ\r\n" + 
+        		"Click \"Bắt đầu\" để chat với người lạ, gõ #pp để kết thúc cuộc trò chuyện", buttons);
         final TemplateMessage templateMessage = TemplateMessage.create(buttonTemplate);
         final MessagePayload messagePayload = MessagePayload.create(recipientId, MessagingType.RESPONSE, templateMessage);
         this.messenger.send(messagePayload);
