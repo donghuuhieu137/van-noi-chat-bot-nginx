@@ -80,8 +80,7 @@ public class CallBackHandle {
 		    try {
 		    	String senderId = event.senderId();
 		    	if (event.isTextMessageEvent()) {
-		    		if(event.asTextMessageEvent().text() == "Bắt đầu") {
-		    			sendQuickReplyMessage(senderId);
+		    		if(event.asTextMessageEvent().text().equalsIgnoreCase("Bắt đầu")) {
 				    	sendTextMessage(senderId, "started");
 		    		}
 		    		else
@@ -97,6 +96,8 @@ public class CallBackHandle {
 			    }
 			    else if(event.isPostbackEvent()) {
 			    	String text = event.asPostbackEvent().payload().get();
+			    	if(text.equalsIgnoreCase("Bắt đầu"))
+			    		sendTextMessage(senderId, "started");;
 			    	sendTextMessage(senderId, text);
 			    }
 			    else {
