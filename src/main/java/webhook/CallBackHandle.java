@@ -41,7 +41,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -82,13 +81,13 @@ public class CallBackHandle {
 		    	String senderId = event.senderId();
 		    	if (event.isTextMessageEvent()) {
 		    		if(event.asTextMessageEvent().text() == "/start") {
-		    			sendQuickReply(senderId);
+//		    			sendQuickReply(senderId);
 				    	sendTextMessage(senderId, "started");
 		    		}
 		    		else
 		    			sendTextMessage(senderId, event.asTextMessageEvent().text());
 			    	sendButtonMessage(senderId);
-			    	sendQuickReply(senderId);
+//			    	sendQuickReply(senderId);
 			    }
 			    else if(event.isAttachmentMessageEvent()) {
 			    	sendAttachmentMessage(event.asAttachmentMessageEvent());
