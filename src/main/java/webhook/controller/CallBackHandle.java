@@ -1,4 +1,4 @@
-package webhook;
+package webhook.controller;
 import static com.github.messenger4j.Messenger.CHALLENGE_REQUEST_PARAM_NAME;
 import static com.github.messenger4j.Messenger.MODE_REQUEST_PARAM_NAME;
 import static com.github.messenger4j.Messenger.SIGNATURE_HEADER_NAME;
@@ -19,21 +19,21 @@ import com.github.messenger4j.send.message.richmedia.RichMediaAsset.Type;
 import com.github.messenger4j.send.message.richmedia.UrlRichMediaAsset;
 import com.github.messenger4j.send.message.template.ButtonTemplate;
 import com.github.messenger4j.send.message.template.button.Button;
-import com.github.messenger4j.send.message.template.button.CallButton;
 import com.github.messenger4j.send.message.template.button.PostbackButton;
 import com.github.messenger4j.send.message.template.button.UrlButton;
 import com.github.messenger4j.send.recipient.IdRecipient;
-import com.github.messenger4j.userprofile.UserProfile;
 import com.github.messenger4j.webhook.event.AttachmentMessageEvent;
-import com.github.messenger4j.webhook.event.PostbackEvent;
 import com.github.messenger4j.webhook.event.QuickReplyMessageEvent;
-import com.github.messenger4j.webhook.event.TextMessageEvent;
 import com.github.messenger4j.webhook.event.attachment.Attachment;
 import com.github.messenger4j.webhook.event.attachment.RichMediaAttachment;
 
+import webhook.entity.User;
+import webhook.service.WebhookService;
+import webhook.service.database.UserService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -50,11 +50,15 @@ import java.util.Optional;
 @CrossOrigin("*")
 @RequestMapping("/webhook")
 public class CallBackHandle {
+	
+	@Autowired
+	private UserService userService;
+	
+	private WebhookService webhookService;
+	
     private static final Logger logger = LoggerFactory.getLogger(CallBackHandle.class);
 
     private Messenger messenger;
-
-	private String o;
 
     public CallBackHandle(Messenger messenger) {
         this.messenger = messenger;
@@ -79,30 +83,21 @@ public class CallBackHandle {
     	
 		this.messenger.onReceiveEvents(payload, Optional.of(signature), event -> {
 		    try {
-		    	String senderId = event.senderId();
-		    	if (event.isTextMessageEvent()) {
-		    		if(event.asTextMessageEvent().text().equalsIgnoreCase("Bắt đầu")) {
-				    	sendQuickReplyMessage(senderId);
-		    		}
-		    		else
-		    			sendTextMessage(senderId, event.asTextMessageEvent().text());
-			    	sendButtonMessage(senderId);
-			    }
-			    else if(event.isAttachmentMessageEvent()) {
-			    	sendAttachmentMessage(event.asAttachmentMessageEvent());
-			    }
-			    else if(event.isQuickReplyMessageEvent()) {
-			    	sendQuickReplyMessage(event.asQuickReplyMessageEvent());
-			    }
-			    else if(event.isPostbackEvent()) {
-			    	String text = event.asPostbackEvent().payload().get().toString();
-			    	if(text.equalsIgnoreCase("GET_START")==true)
-			    		sendQuickReplyMessage(senderId);
-			    	else if(text.equalsIgnoreCase("ABOUT_US")==true)
-			    		sendTextMessage(senderId,". . .");
-			    }
+		    	if(userService.findUser(event.senderId())==null) {
+		    		userService.newUser(event.senderId());
+		    		sendButtonMessage(event.senderId());
+		    		System.out.println("new user");
+		    	}
+		    	if (event.isTextMessageEvent())
+				    webhookService.receivedTextMessage(event.asTextMessageEvent());
+			    else if(event.isAttachmentMessageEvent())
+			    	webhookService.receivedAttachmentMessage(event.asAttachmentMessageEvent());
+			    else if(event.isQuickReplyMessageEvent())
+			    	webhookService.receivedQuickReplyMessage(event.asQuickReplyMessageEvent());
+			    else if(event.isPostbackEvent())
+			    	webhookService.receivedPostBackMessage(event.asPostbackEvent());
 			    else {
-			    	handleException(senderId, "ERROR!!");
+			    	handleException(event.senderId(), "ERROR!!");
 			    }
 			} catch (MessengerApiException | MessengerIOException | MalformedURLException e) {
 				logger.debug(e.getMessage());
@@ -113,89 +108,12 @@ public class CallBackHandle {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-	private void sendAttachmentMessage(AttachmentMessageEvent event) {
-		try {
-			final String senderId = event.senderId();
-			
-			for (Attachment attachment : event.attachments()) {
-				if(attachment.isRichMediaAttachment()) {
-					final RichMediaAttachment richMediaAttachment = attachment.asRichMediaAttachment();
-					final RichMediaAttachment.Type type = richMediaAttachment.type();
-					sendTextMessage(senderId, type.toString());
-					final URL url = richMediaAttachment.url();
-					if(type.toString() == "IMAGE")
-						sendMediaMessage(senderId, Type.IMAGE , url);
-					else if(type.toString() == "VIDEO")
-						sendMediaMessage(senderId, Type.VIDEO , url);
-					else if(type.toString() == "FILE")
-						sendMediaMessage(senderId, Type.FILE , url);
-					else if(type.toString() == "AUDIO")
-						sendMediaMessage(senderId, Type.AUDIO , url);
-				}
-			}
-		} catch (Exception e) {
-			logger.debug(e.getMessage());
-			e.printStackTrace();
-		}
-	}
-	
-	private void sendTextMessage(String recipientId, String text) {
-		try {
-			final IdRecipient idRecipient = IdRecipient.create(recipientId);
-			
-			final TextMessage textMessage = TextMessage.create(text);
-			final MessagePayload messagePayload = MessagePayload.create(idRecipient, MessagingType.RESPONSE, textMessage);
-			this.messenger.send(messagePayload);
-		} catch (MessengerApiException | MessengerIOException e) {
-			logger.debug(e.getMessage());
-			e.printStackTrace();
-		}
-		
-	}
-	
-//	private void sendUserDetails(String recipientId) throws MessengerApiException, MessengerIOException {
-//        final UserProfile userProfile = this.messenger.queryUserProfile(recipientId);
-//        sendTextMessage(recipientId, String.format("Your name is %s and you are %s", userProfile.firstName(), userProfile.gender()));
-//        logger.info("User Profile Picture: {}", userProfile.profilePicture());
-//    }
-
-    private void sendMediaMessage(String recipientId, Type type, URL url) throws MessengerApiException, MessengerIOException, MalformedURLException {
-        final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(type, new URL(url.toString()));
-        sendRichMediaMessage(recipientId, richMediaAsset);
-    }
-
-    private void sendRichMediaMessage(String recipientId, UrlRichMediaAsset richMediaAsset) throws MessengerApiException, MessengerIOException {
-        final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
-        final MessagePayload messagePayload = MessagePayload.create(recipientId, MessagingType.RESPONSE, richMediaMessage);
-        this.messenger.send(messagePayload);
-    }
-
-	
 	private void handleException(String senderId, String text) throws MessengerIOException, MessengerApiException{
 		final TextMessage textMessage = TextMessage.create(text);
 		final MessagePayload payload = MessagePayload.create(senderId,MessagingType.RESPONSE, textMessage);
 		this.messenger.send(payload);
 	}
-	
-	private void sendQuickReplyMessage(QuickReplyMessageEvent event) {
-		String text = event.payload().toString();
-		sendTextMessage(event.senderId(),text);
-		if(text.equalsIgnoreCase("Đang tìm đối phương nam . . .")==true)
-			sendTextMessage(event.senderId(),"Nam");
-		else if (text.equalsIgnoreCase("Đang tìm đối phương nữ . . .")==true)
-			sendTextMessage(event.senderId(),"Nữ");
-	}	
-	
-	private void sendQuickReplyMessage(String recipientId) throws MessengerApiException, MessengerIOException {
-        List<QuickReply> quickReplies = new ArrayList<>();
 
-        quickReplies.add(TextQuickReply.create("Nam", "Đang tìm đối phương nam . . ."));
-        quickReplies.add(TextQuickReply.create("Nữ", "Đang tìm đối phương nữ . . ."));
-
-        TextMessage message = TextMessage.create("Bạn muốn tìm kiếm đối phương nam hay nữ ?", Optional.of(quickReplies), Optional.empty());
-        this.messenger.send(MessagePayload.create(recipientId, MessagingType.RESPONSE, message));
-    }
-	
 	private void sendButtonMessage(String recipientId) throws MessengerApiException, MessengerIOException, MalformedURLException {
         final List<Button> buttons = Arrays.asList(
         		PostbackButton.create("Bắt đầu","GET_START"),
@@ -204,7 +122,7 @@ public class CallBackHandle {
         );
 
         final ButtonTemplate buttonTemplate = ButtonTemplate.create("Chat với người lạ\r\n" + 
-        		"Click \"Bắt đầu\" để chat với người lạ, gõ #pp để kết thúc cuộc trò chuyện", buttons);
+        		"Click \"Bắt đầu\" để chat với người lạ, gõ /end để kết thúc cuộc trò chuyện", buttons);
         final TemplateMessage templateMessage = TemplateMessage.create(buttonTemplate);
         final MessagePayload messagePayload = MessagePayload.create(recipientId, MessagingType.RESPONSE, templateMessage);
         this.messenger.send(messagePayload);
