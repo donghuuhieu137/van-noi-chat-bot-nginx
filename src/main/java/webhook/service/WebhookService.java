@@ -37,6 +37,7 @@ public class WebhookService {
 	
 	private Messenger messenger;
 	
+	@Autowired
 	private PairService pairService;
 	
 	public void receivedTextMessage(TextMessageEvent event) throws MessengerApiException, MessengerIOException {

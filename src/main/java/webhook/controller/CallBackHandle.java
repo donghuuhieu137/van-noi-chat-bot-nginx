@@ -54,6 +54,7 @@ public class CallBackHandle {
 	@Autowired
 	private UserService userService;
 	
+	@Autowired
 	private WebhookService webhookService;
 	
     private static final Logger logger = LoggerFactory.getLogger(CallBackHandle.class);
