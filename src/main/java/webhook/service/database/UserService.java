@@ -44,7 +44,7 @@ public class UserService {
 	}
 
 	public List<User> findPartner(String partnerGender) {
-		String sql = "SELECT * FROM vannoichatbot.tbl_user WHERE status = 'FINDING' and gender = " + partnerGender + ";";
+		String sql = "SELECT * FROM vannoichatbot.tbl_user WHERE status = 'FINDING' and gender = '" + partnerGender + "';";
 		Query query = entityManager.createNativeQuery(sql, User.class);
 		return query.getResultList();
 	}
