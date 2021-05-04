@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import webhook.entity.Session;
 import webhook.entity.User;
 import webhook.repository.SessionRepo;
+import webhook.service.WebhookService;
 
 @Service
 public class SessionService {
@@ -23,7 +24,7 @@ public class SessionService {
 	private SessionRepo sessionRepo;
 	
 	@Autowired
-	private UserService userService;
+	private WebhookService webhookService;
 	
 	public void addSession(String l_partner, String r_partner) {
 		Session session = new Session();
@@ -35,6 +36,8 @@ public class SessionService {
 
 	public String findPartner(String id) {
 		List<Session> sessions = findUserSession(id);
+		if(sessions.isEmpty())
+			return null;
 		if(sessions.get(0).getL_partner() == id)
 			return sessions.get(0).getR_partner();
 		return sessions.get(0).getL_partner();

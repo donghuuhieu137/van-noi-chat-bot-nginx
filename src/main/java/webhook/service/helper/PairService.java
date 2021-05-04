@@ -98,12 +98,16 @@ public class PairService {
 		System.out.println("recivedEndReq");
 		User user = userService.findUser(senderId).get(0);
 		String partnerId = sessionService.findPartner(senderId);
-		User partner = userService.findUser(partnerId).get(0);
-		user.setStatus("FREE");
-		partner.setStatus("FREE");
-		Session session = sessionService.findUserSession(senderId).get(0);
-		Log log = new Log(session.getL_partner(), session.getR_partner(), session.getCreatedDate(),LocalDateTime.now());
-		logRepo.save(log);
-		sessionService.deleteSession(session);
+		if(partnerId == null)
+			webhookService.sendTextMessage(senderId, "Bạn chưa được kết đôi");
+		else {
+			User partner = userService.findUser(partnerId).get(0);
+			user.setStatus("FREE");
+			partner.setStatus("FREE");
+			Session session = sessionService.findUserSession(senderId).get(0);
+			Log log = new Log(session.getL_partner(), session.getR_partner(), session.getCreatedDate(),LocalDateTime.now());
+			logRepo.save(log);
+			sessionService.deleteSession(session);
+		}
 	}
 }
