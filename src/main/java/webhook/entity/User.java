@@ -12,11 +12,11 @@ public class User extends BaseEntity{
 	@Column(name = "id", nullable = false)
 	private String id;
 	
-	@Column(name = "first_name", length = 60, nullable = false)
-	private String first_name;
+	@Column(name = "first_name", length = 60, nullable = true)
+	private String first_name = null;
 	
-	@Column(name = "last_name", length = 60, nullable = false)
-	private String last_name;
+	@Column(name = "last_name", length = 60, nullable = true)
+	private String last_name = null;
 	
 	@Column(name = "gender", length = 10, nullable = true)
 	private String gender = null;
