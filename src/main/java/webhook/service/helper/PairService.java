@@ -53,11 +53,13 @@ public class PairService {
 	
 	public void recivedMatchReq(String id) throws MessengerApiException, MessengerIOException {
 		System.out.println("recivedMatchReq");
-		if(userService.findUser(id).get(0).getStatus()=="MATCHED")
+		String statusUser = userService.findUser(id).get(0).getStatus();
+		System.out.println(statusUser);
+		if(statusUser=="MATCHED")
 			webhookService.sendTextMessage(id, "Bạn đã được ghép đôi\nVui lòng hủy ghép đôi trước khi tìm đối mới");
-		else if (userService.findUser(id).get(0).getStatus()=="FINDING")
+		else if (statusUser=="FINDING")
 			webhookService.sendTextMessage(id, "Bot hiện vẫn đang tìm đối cho bạn");
-		else if(userService.findUser(id).get(0).getStatus()=="FREE")
+		else if(statusUser=="FREE")
 			sendChooseMessage(id);
 	}
 	
