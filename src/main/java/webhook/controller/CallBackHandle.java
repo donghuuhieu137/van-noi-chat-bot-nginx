@@ -90,7 +90,10 @@ public class CallBackHandle {
 		    		sendButtonMessage(event.senderId());
 		    	}
 		    	if (event.isTextMessageEvent())
+		    	{
+		    		System.out.println(event.asTextMessageEvent().text());
 				    webhookService.receivedTextMessage(event.asTextMessageEvent());
+		    	}
 			    else if(event.isAttachmentMessageEvent())
 			    	webhookService.receivedAttachmentMessage(event.asAttachmentMessageEvent());
 			    else if(event.isQuickReplyMessageEvent())
