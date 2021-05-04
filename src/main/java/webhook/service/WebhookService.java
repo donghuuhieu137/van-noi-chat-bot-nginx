@@ -37,6 +37,7 @@ public class WebhookService {
 	@Autowired
 	private SessionService sessionService;
 	
+	@Autowired
 	private Messenger messenger;
 	
 	@Autowired

@@ -48,6 +48,7 @@ public class PairService {
 	@Autowired
 	private UserService userService;
 	
+	@Autowired
 	private Messenger messenger;
 	
 	public void recivedMatchReq(String id) throws MessengerApiException, MessengerIOException {

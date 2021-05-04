@@ -59,8 +59,10 @@ public class CallBackHandle {
 	
     private static final Logger logger = LoggerFactory.getLogger(CallBackHandle.class);
 
+    @Autowired
     public Messenger messenger;
 
+    @Autowired
     public CallBackHandle(Messenger messenger) {
         this.messenger = messenger;
     }
