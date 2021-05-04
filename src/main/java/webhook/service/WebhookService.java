@@ -50,9 +50,9 @@ public class WebhookService {
 					pairService.recivedEndReq(event.senderId());
 				break;
 			default:
-				User user = userService.findUser(event.senderId());
+				User user = userService.findUser(event.senderId()).get(0);
 				if(user.getStatus()=="MATCHED") {
-					String partnerId = sessionService.findPartner(user.getId()).toString();
+					String partnerId = sessionService.findPartner(user.getId());
 					sendTextMessage(partnerId, text);
 				}
 		}

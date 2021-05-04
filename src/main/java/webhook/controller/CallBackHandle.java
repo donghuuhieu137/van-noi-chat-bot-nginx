@@ -83,7 +83,7 @@ public class CallBackHandle {
     	
 		this.messenger.onReceiveEvents(payload, Optional.of(signature), event -> {
 		    try {
-		    	if(userService.findUser(event.senderId())==null) {
+		    	if(userService.findUser(event.senderId()).get(0)==null) {
 		    		userService.newUser(event.senderId());
 		    		sendButtonMessage(event.senderId());
 		    		System.out.println("new user");

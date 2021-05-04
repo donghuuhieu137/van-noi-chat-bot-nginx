@@ -10,7 +10,7 @@ import javax.persistence.Table;
 public class User extends BaseEntity{
 	@Id
 	@Column(name = "id", nullable = false)
-	private Integer id;
+	private String id;
 	
 	@Column(name = "first_name", length = 60, nullable = false)
 	private String first_name;
@@ -30,11 +30,13 @@ public class User extends BaseEntity{
 	@Column(name = "profile_pic", length = 200, nullable = true)
 	private String profile_pic = null;
 
-	public Integer getId() {
+	
+
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -86,12 +88,14 @@ public class User extends BaseEntity{
 		this.partnerGender = partnerGender;
 	}
 
-	public User(Integer id, String first_name, String last_name, String gender, String locale, String profile_pic) {
+	public User(String id, String first_name, String last_name, String gender, String partnerGender, String locale,
+			String profile_pic) {
 		super();
 		this.id = id;
 		this.first_name = first_name;
 		this.last_name = last_name;
 		this.gender = gender;
+		this.partnerGender = partnerGender;
 		this.locale = locale;
 		this.profile_pic = profile_pic;
 	}

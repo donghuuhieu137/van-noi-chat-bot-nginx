@@ -28,24 +28,20 @@ public class UserService {
 	private Messenger messenger;
 	
 	public void newUser(String id) throws MessengerApiException, MessengerIOException {
-		Integer userId = Integer.parseInt(id);
 		UserProfile userProfile = this.messenger.queryUserProfile(id);
-		User user = new User(userId, userProfile.firstName(), userProfile.lastName(), userProfile.gender().toString(), userProfile.locale(), userProfile.profilePicture());
+		User user = new User(id, userProfile.firstName(), userProfile.lastName(), userProfile.gender().toString(),null,userProfile.locale(), userProfile.profilePicture());
 		user.setStatus("FREE");
 		userRepo.save(user);
 	}
 	
-	public User findUser(String id) {
-		Integer userId = Integer.parseInt(id);
-		if(userRepo.findById(userId).get()!=null) {
-			User user = userRepo.findById(userId).get();
-			return user;
-		}
-		return null;
+	public List<User> findUser(String id) {
+		String sql = "SELECT * FROM vannoichatbot.tbl_user WHERE id = "+id+";";
+		Query query = entityManager.createNativeQuery(sql, User.class);
+		return query.getResultList();
 	}
 
 	public List<User> findPartner(String partnerGender) {
-		String sql = "SELECT * FROM vannoichatbot.tbl_user WHERE status = 'FINDING' and partner_gender != " + partnerGender + ";";
+		String sql = "SELECT * FROM vannoichatbot.tbl_user WHERE status = 'FINDING' and gender = " + partnerGender + ";";
 		Query query = entityManager.createNativeQuery(sql, User.class);
 		return query.getResultList();
 	}

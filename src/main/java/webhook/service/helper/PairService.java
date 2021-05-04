@@ -49,11 +49,11 @@ public class PairService {
 	
 	public void recivedMatchReq(String id) throws MessengerApiException, MessengerIOException {
 		System.out.println("recivedMatchReq");
-		if(userService.findUser(id).getStatus()=="MATCHED")
+		if(userService.findUser(id).get(0).getStatus()=="MATCHED")
 			webhookService.sendTextMessage(id, "Bạn đã được ghép đôi\nVui lòng hủy ghép đôi trước khi tìm đối mới");
-		else if (userService.findUser(id).getStatus()=="FINDING")
+		else if (userService.findUser(id).get(0).getStatus()=="FINDING")
 			webhookService.sendTextMessage(id, "Bot hiện vẫn đang tìm đối cho bạn");
-		else if(userService.findUser(id).getStatus()=="FREE")
+		else if(userService.findUser(id).get(0).getStatus()=="FREE")
 			sendChooseMessage(id);
 	}
 	
@@ -71,7 +71,7 @@ public class PairService {
 	public void matchUser(QuickReplyMessageEvent event) {
 		System.out.println("matchUser");
 		String partnerGender = event.payload().toString();
-		User user = userService.findUser(event.senderId());
+		User user = userService.findUser(event.senderId()).get(0);
 		user.setPartnerGender(partnerGender);
 		List<User> listUser = userService.findPartner(partnerGender);
 		if(listUser.isEmpty()) {
@@ -83,7 +83,7 @@ public class PairService {
 			System.out.println("MATCHED");
 			sessionService.addSession(user.getId(),listUser.get(0).getId());
 			String partnerId = listUser.get(0).getId().toString();
-			User partner = userService.findUser(partnerId);
+			User partner = userService.findUser(partnerId).get(0);
 			user.setStatus("MATCHED");
 			partner.setStatus("MATCHED");
 			webhookService.sendTextMessage(partnerId,"Matched\nGhép cặp thành công !!");
@@ -93,13 +93,12 @@ public class PairService {
 
 	public void recivedEndReq(String senderId) {
 		System.out.println("recivedEndReq");
-		Integer id = Integer.parseInt(senderId);
-		User user = userService.findUser(senderId);
-		String partnerId = sessionService.findPartner(id).toString();
-		User partner = userService.findUser(partnerId);
+		User user = userService.findUser(senderId).get(0);
+		String partnerId = sessionService.findPartner(senderId);
+		User partner = userService.findUser(partnerId).get(0);
 		user.setStatus("FREE");
 		partner.setStatus("FREE");
-		Session session = sessionService.findUserSession(id).get(0);
+		Session session = sessionService.findUserSession(senderId).get(0);
 		Log log = new Log(session.getL_partner(), session.getR_partner(), session.getCreatedDate(),LocalDateTime.now());
 		logRepo.save(log);
 		sessionService.deleteSession(session);

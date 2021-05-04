@@ -25,7 +25,7 @@ public class SessionService {
 	@Autowired
 	private UserService userService;
 	
-	public void addSession(Integer l_partner, Integer r_partner) {
+	public void addSession(String l_partner, String r_partner) {
 		Session session = new Session();
 		session.setL_partner(l_partner);
 		session.setR_partner(r_partner);
@@ -33,15 +33,14 @@ public class SessionService {
 		sessionRepo.save(session);
 	}
 
-	public Integer findPartner(Integer id) {
+	public String findPartner(String id) {
 		List<Session> sessions = findUserSession(id);
 		if(sessions.get(0).getL_partner() == id)
 			return sessions.get(0).getR_partner();
 		return sessions.get(0).getL_partner();
 	}
 	
-	public List<Session> findUserSession(Integer id) {
-		String strId = id.toString();
+	public List<Session> findUserSession(String strId) {
 		String sql = "SELECT * FROM vannoichatbot.tbl_session WHERE l_partner = "+ strId +" or l_partner = "+ strId +";";
 		Query query = entityManager.createNativeQuery(sql, User.class);
 		return query.getResultList();

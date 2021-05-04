@@ -22,10 +22,10 @@ public class Log {
 	private Integer id;
 	
 	@Column(name = "l_partner", nullable = false)
-	private Integer l_partner;
+	private String l_partner;
 	
 	@Column(name = "r_partner", nullable = false)
-	private Integer r_partner;
+	private String r_partner;
 	
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	@Column(name = "paired_date", nullable = true)
@@ -59,28 +59,30 @@ public class Log {
 		this.unpairedDate = unpairedDate;
 	}
 
-	public Integer getL_partner() {
+	public String getL_partner() {
 		return l_partner;
 	}
 
-	public void setL_partner(Integer l_partner) {
+	public void setL_partner(String l_partner) {
 		this.l_partner = l_partner;
 	}
 
-	public Integer getR_partner() {
+	public String getR_partner() {
 		return r_partner;
 	}
 
-	public void setR_partner(Integer r_partner) {
+	public void setR_partner(String r_partner) {
 		this.r_partner = r_partner;
 	}
 
-	public Log(Integer l_partner, Integer r_partner, LocalDateTime pairedDate, LocalDateTime unpairedDate) {
+	public Log(String l_partner, String r_partner, LocalDateTime pairedDate, LocalDateTime unpairedDate) {
 		super();
 		this.l_partner = l_partner;
 		this.r_partner = r_partner;
 		this.pairedDate = pairedDate;
 		this.unpairedDate = unpairedDate;
 	}
+
+	
 
 }
