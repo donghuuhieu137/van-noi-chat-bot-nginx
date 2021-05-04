@@ -8,6 +8,7 @@ import java.util.Optional;
 import javax.jws.soap.SOAPBinding.Use;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.github.messenger4j.Messenger;
 import com.github.messenger4j.exception.MessengerApiException;
@@ -29,6 +30,7 @@ import webhook.service.WebhookService;
 import webhook.service.database.SessionService;
 import webhook.service.database.UserService;
 
+@Service
 public class PairService {
 
 	@Autowired
