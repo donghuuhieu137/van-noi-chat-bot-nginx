@@ -4,6 +4,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.github.messenger4j.Messenger;
 import com.github.messenger4j.exception.MessengerApiException;
@@ -27,6 +28,7 @@ import webhook.service.database.SessionService;
 import webhook.service.database.UserService;
 import webhook.service.helper.PairService;
 
+@Service
 public class WebhookService {
 	
 	@Autowired
