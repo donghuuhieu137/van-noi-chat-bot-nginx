@@ -14,6 +14,7 @@ import com.github.messenger4j.exception.MessengerApiException;
 import com.github.messenger4j.exception.MessengerIOException;
 import com.github.messenger4j.userprofile.UserProfile;
 
+import webhook.controller.CallBackHandle;
 import webhook.entity.User;
 import webhook.repository.UserRepo;
 
@@ -25,10 +26,12 @@ public class UserService {
 	@Autowired
 	private UserRepo userRepo;
 	
+	@Autowired
 	private Messenger messenger;
 	
 	public void newUser(String id) throws MessengerApiException, MessengerIOException {
 		UserProfile userProfile = this.messenger.queryUserProfile(id);
+		System.out.println(userProfile.firstName());
 		User user = new User(id, userProfile.firstName(), userProfile.lastName(), userProfile.gender().toString(),null,userProfile.locale(), userProfile.profilePicture());
 		user.setStatus("FREE");
 		userRepo.save(user);

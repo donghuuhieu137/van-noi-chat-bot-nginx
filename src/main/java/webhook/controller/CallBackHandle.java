@@ -58,13 +58,14 @@ public class CallBackHandle {
 	
     private static final Logger logger = LoggerFactory.getLogger(CallBackHandle.class);
 
-    private Messenger messenger;
+    public Messenger messenger;
 
     public CallBackHandle(Messenger messenger) {
         this.messenger = messenger;
     }
 
-    @GetMapping
+
+	@GetMapping
     public ResponseEntity<String> verifyWebHook(@RequestParam(MODE_REQUEST_PARAM_NAME) final String mode,
                                                 @RequestParam(VERIFY_TOKEN_REQUEST_PARAM_NAME) final String verifyToken,
                                                 @RequestParam(CHALLENGE_REQUEST_PARAM_NAME) final String challenge){
@@ -84,9 +85,9 @@ public class CallBackHandle {
 		this.messenger.onReceiveEvents(payload, Optional.of(signature), event -> {
 		    try {
 		    	if(userService.findUser(event.senderId()).isEmpty()) {
+		    		System.out.println("new user");
 		    		userService.newUser(event.senderId());
 		    		sendButtonMessage(event.senderId());
-		    		System.out.println("new user");
 		    	}
 		    	if (event.isTextMessageEvent())
 				    webhookService.receivedTextMessage(event.asTextMessageEvent());

@@ -19,6 +19,7 @@ import com.github.messenger4j.send.message.quickreply.QuickReply;
 import com.github.messenger4j.send.message.quickreply.TextQuickReply;
 import com.github.messenger4j.webhook.event.QuickReplyMessageEvent;
 
+import webhook.controller.CallBackHandle;
 import webhook.entity.Log;
 import webhook.entity.Session;
 import webhook.entity.User;
@@ -45,6 +46,7 @@ public class PairService {
 	@Autowired
 	private UserService userService;
 	
+	@Autowired
 	private Messenger messenger;
 	
 	public void recivedMatchReq(String id) throws MessengerApiException, MessengerIOException {
