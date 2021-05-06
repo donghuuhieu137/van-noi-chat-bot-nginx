@@ -54,6 +54,7 @@ public class WebhookService {
 					pairService.recivedEndReq(event.senderId());
 				break;
 			default:
+				System.out.println("Send text to partner");
 				User user = userService.findUser(event.senderId()).get(0);
 				if(user.getStatus().equalsIgnoreCase("MATCHED")) {
 					String partnerId = sessionService.findPartner(user.getId());
