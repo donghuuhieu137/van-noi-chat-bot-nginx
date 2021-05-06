@@ -116,6 +116,8 @@ public class PairService {
 			User partner = userService.findUser(partnerId).get(0);
 			user.setStatus("FREE");
 			partner.setStatus("FREE");
+			userRepo.save(user);
+			userRepo.save(partner);
 			Session session = sessionService.findUserSession(senderId).get(0);
 			Log log = new Log(session.getL_partner(), session.getR_partner(), session.getCreatedDate(),LocalDateTime.now());
 			logRepo.save(log);

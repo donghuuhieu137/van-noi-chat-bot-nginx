@@ -38,7 +38,7 @@ public class SessionService {
 		List<Session> sessions = findUserSession(id);
 		if(sessions.isEmpty())
 			return null;
-		if(sessions.get(0).getL_partner() == id)
+		if(sessions.get(0).getL_partner().equalsIgnoreCase(id))
 			return sessions.get(0).getR_partner();
 		return sessions.get(0).getL_partner();
 	}
