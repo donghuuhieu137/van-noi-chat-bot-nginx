@@ -99,6 +99,8 @@ public class PairService {
 			User partner = userService.findUser(partnerId).get(0);
 			user.setStatus("MATCHED");
 			partner.setStatus("MATCHED");
+			userRepo.save(user);
+			userRepo.save(partner);
 			webhookService.sendTextMessage(partnerId,"Matched\nGhép cặp thành công !!");
 			webhookService.sendTextMessage(event.senderId(),"Matched\nGhép cặp thành công !!");
 		}

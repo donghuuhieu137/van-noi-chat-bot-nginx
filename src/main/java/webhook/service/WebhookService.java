@@ -55,7 +55,7 @@ public class WebhookService {
 				break;
 			default:
 				User user = userService.findUser(event.senderId()).get(0);
-				if(user.getStatus()=="MATCHED") {
+				if(user.getStatus().equalsIgnoreCase("MATCHED")) {
 					String partnerId = sessionService.findPartner(user.getId());
 					sendTextMessage(partnerId, text);
 				}
