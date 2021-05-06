@@ -129,7 +129,7 @@ public class CallBackHandle {
         );
 
         final ButtonTemplate buttonTemplate = ButtonTemplate.create("Chat với người lạ\r\n" + 
-        		"Click \"Bắt đầu\" để chat với người lạ, gõ /end để kết thúc cuộc trò chuyện", buttons);
+        		"Click \"Bắt đầu\" để chat với người lạ, gõ /hd để được hướng dẫn", buttons);
         final TemplateMessage templateMessage = TemplateMessage.create(buttonTemplate);
         final MessagePayload messagePayload = MessagePayload.create(recipientId, MessagingType.RESPONSE, templateMessage);
         this.messenger.send(messagePayload);

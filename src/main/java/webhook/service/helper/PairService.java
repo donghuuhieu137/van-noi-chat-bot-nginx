@@ -111,7 +111,7 @@ public class PairService {
 		User user = userService.findUser(senderId).get(0);
 		String partnerId = sessionService.findPartner(senderId);
 		if(partnerId == null)
-			webhookService.sendTextMessage(senderId, "Bạn chưa được kết đôi");
+			webhookService.sendTextMessage(senderId, "Bạn hiện chưa được kết đôi");
 		else {
 			User partner = userService.findUser(partnerId).get(0);
 			user.setStatus("FREE");
@@ -122,6 +122,28 @@ public class PairService {
 			Log log = new Log(session.getL_partner(), session.getR_partner(), session.getCreatedDate(),LocalDateTime.now());
 			logRepo.save(log);
 			sessionService.deleteSession(session);
+			webhookService.sendTextMessage(partnerId,"Bot đã kết thúc cuộc trò chuyện");
+			webhookService.sendTextMessage(user.getId(),"Bot đã kết thúc cuộc trò chuyện");
+		}
+	}
+
+	public void recivedStopReq(String senderId) {
+		System.out.println("recivedStopReq");
+		User user = userService.findUser(senderId).get(0);
+		switch(user.getStatus()) {
+			case "FREE":
+				webhookService.sendTextMessage(senderId, "Bạn hiện chưa tìm đối !!");	
+				break;
+			case "FINDING":
+				user.setStatus("FREE");
+				userRepo.save(user);
+				webhookService.sendTextMessage(senderId, "Bot đã tạm dừng tìm đối !!");
+				break;
+			case "MATCHED":
+				webhookService.sendTextMessage(senderId, "Bạn hiện đang trong cuộc trò chuyện\nĐể kết thúc trò chuyện chat: /end");
+				break;
+			default:
+				System.out.println(user.getStatus()+" is invalid");
 		}
 	}
 }

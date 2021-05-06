@@ -50,8 +50,14 @@ public class WebhookService {
 			case "/find":
 					pairService.recivedMatchReq(event.senderId());
 				break;
+			case "/stop":
+					pairService.recivedStopReq(event.senderId());
+				break;
 			case "/end":
 					pairService.recivedEndReq(event.senderId());
+				break;
+			case "/hd":
+					sendTextMessage(event.senderId(), "Các câu lệnh:\n/find: Bot sẽ kết nối bạn với người lạ.\n/stop: Bot sẽ dừng tìm kiếm.\n/end: Bot sẽ kết thúc cuộc trò chuyện của bạn với đối.");
 				break;
 			default:
 				System.out.println("Send text to partner");
@@ -82,7 +88,7 @@ public class WebhookService {
 		System.out.println("receivedQuickReplyMessage");
 		String text = event.payload().toString();
 		if(text.equalsIgnoreCase("male")==true)
-			sendTextMessage(event.senderId(),"Đang tìm đối phương nam");
+			sendTextMessage(event.senderId(),"Đang tìm đối phương nam . . .");
 		else if (text.equalsIgnoreCase("female")==true)
 			sendTextMessage(event.senderId(),"Đang tìm đối phương nữ . . .");
 		pairService.matchUser(event);
