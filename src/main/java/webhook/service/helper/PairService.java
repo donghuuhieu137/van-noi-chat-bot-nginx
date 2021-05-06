@@ -86,7 +86,7 @@ public class PairService {
 		String partnerGender = event.payload().toString();
 		User user = userService.findUser(event.senderId()).get(0);
 		user.setPartnerGender(partnerGender);
-		List<User> listUser = userService.findPartner(partnerGender);
+		List<User> listUser = userService.findPartner(partnerGender,user.getGender());
 		if(listUser.isEmpty()) {
 			user.setStatus("FINDING");
 			userRepo.save(user);

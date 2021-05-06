@@ -57,7 +57,7 @@ public class WebhookService {
 					pairService.recivedEndReq(event.senderId());
 				break;
 			case "/hd":
-					sendTextMessage(event.senderId(), "Các câu lệnh:\n/find: Bot sẽ kết nối bạn với người lạ.\n/stop: Bot sẽ dừng tìm kiếm.\n/end: Bot sẽ kết thúc cuộc trò chuyện của bạn với đối.");
+					sendTextMessage(event.senderId(), "Các câu lệnh:\n/find: Bot sẽ kết nối bạn với người lạ.\n/stop: Bot sẽ dừng tìm kiếm.\n/end: Bot sẽ kết thúc cuộc trò chuyện của bạn với người lạ.");
 				break;
 			default:
 				System.out.println("Send text to partner");
