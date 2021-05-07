@@ -24,7 +24,7 @@ public class User extends BaseEntity{
 	@Column(name = "partner_gender", length = 10, nullable = true)
 	private String partnerGender = null;
 	
-	@Column(name = "profile_pic", length = 200, nullable = true)
+	@Column(name = "profile_pic", length = 400, nullable = true)
 	private String profile_pic = null;
 
 	
