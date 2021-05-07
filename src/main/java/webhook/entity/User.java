@@ -24,9 +24,6 @@ public class User extends BaseEntity{
 	@Column(name = "partner_gender", length = 10, nullable = true)
 	private String partnerGender = null;
 	
-	@Column(name = "locale", length = 60, nullable = true)
-	private String locale = null;
-	
 	@Column(name = "profile_pic", length = 200, nullable = true)
 	private String profile_pic = null;
 
@@ -64,13 +61,6 @@ public class User extends BaseEntity{
 		this.gender = gender;
 	}
 
-	public String getLocale() {
-		return locale;
-	}
-
-	public void setLocale(String locale) {
-		this.locale = locale;
-	}
 
 	public String getProfile_pic() {
 		return profile_pic;
@@ -88,7 +78,9 @@ public class User extends BaseEntity{
 		this.partnerGender = partnerGender;
 	}
 
-	public User(String id, String first_name, String last_name, String gender, String partnerGender, String locale,
+	
+
+	public User(String id, String first_name, String last_name, String gender, String partnerGender,
 			String profile_pic) {
 		super();
 		this.id = id;
@@ -96,7 +88,6 @@ public class User extends BaseEntity{
 		this.last_name = last_name;
 		this.gender = gender;
 		this.partnerGender = partnerGender;
-		this.locale = locale;
 		this.profile_pic = profile_pic;
 	}
 

@@ -32,7 +32,7 @@ public class UserService {
 	public void newUser(String id) throws MessengerApiException, MessengerIOException {
 		UserProfile userProfile = this.messenger.queryUserProfile(id);
 		System.out.println(userProfile.firstName());
-		User user = new User(id, userProfile.firstName(), userProfile.lastName(), userProfile.gender().toString(),null,userProfile.locale(), userProfile.profilePicture());
+		User user = new User(id, userProfile.firstName(), userProfile.lastName(), userProfile.gender().toString(),null, userProfile.profilePicture());
 		user.setStatus("FREE");
 		userRepo.save(user);
 	}
