@@ -86,13 +86,14 @@ public class CallBackHandle {
     public ResponseEntity<Void> sendMessenger(@RequestBody final String payload, @RequestHeader(SIGNATURE_HEADER_NAME) String signature) throws MessengerVerificationException{
     	
 		this.messenger.onReceiveEvents(payload, Optional.of(signature), event -> {
+			webhookService.sendTextMessage(event.senderId(), "Hi");
 //		    try {
-		    	if(userService.findUser(event.senderId()).isEmpty()) {
-		    		System.out.println("new user");
+//		    	if(userService.findUser(event.senderId()).isEmpty()) {
+//		    		System.out.println("new user");
 //		    		userService.newUser(event.senderId());
 //		    		sendButtonMessage(event.senderId());
-		    		webhookService.sendTextMessage(event.senderId(), "Hi");
-		    	}
+//		    		webhookService.sendTextMessage(event.senderId(), "Hi");
+//		    	}
 //		    	if (event.isTextMessageEvent())
 //		    	{
 //		    		System.out.println(event.asTextMessageEvent().text());
