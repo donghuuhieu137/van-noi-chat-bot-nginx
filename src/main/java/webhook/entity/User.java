@@ -12,19 +12,19 @@ public class User extends BaseEntity{
 	@Column(name = "id", nullable = false)
 	private String id;
 	
-	@Column(name = "first_name", length = 60, nullable = true)
+	@Column(name = "first_name", length = 600, nullable = true)
 	private String first_name = null;
 	
-	@Column(name = "last_name", length = 60, nullable = true)
+	@Column(name = "last_name", length = 600, nullable = true)
 	private String last_name = null;
 	
-	@Column(name = "gender", length = 10, nullable = true)
+	@Column(name = "gender", length = 1000, nullable = true)
 	private String gender = null;
 	
-	@Column(name = "partner_gender", length = 10, nullable = true)
+	@Column(name = "partner_gender", length = 1000, nullable = true)
 	private String partnerGender = null;
 	
-	@Column(name = "profile_pic", length = 400, nullable = true)
+	@Column(name = "profile_pic", length = 1000, nullable = true)
 	private String profile_pic = null;
 
 	
