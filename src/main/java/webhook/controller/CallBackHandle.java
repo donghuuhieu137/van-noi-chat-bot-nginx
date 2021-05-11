@@ -115,8 +115,11 @@ public class CallBackHandle {
 		this.messenger.onReceiveEvents(payload, Optional.of(signature), event -> {
 			if (event.isTextMessageEvent())
 	    	{
-			 handleTextMessageEvent(event.asTextMessageEvent()); 
+			 handleTextMessageEvent(event.asTextMessageEvent());
 	    	}
+			else if(event.isQuickReplyMessageEvent()) {
+				handleQuickReplyMessageEventF(event.asQuickReplyMessageEvent());
+			}
 //		    try {
 //		    	if(userService.findUser(event.senderId()).isEmpty()) {
 //		    		System.out.println("new user");
@@ -185,6 +188,7 @@ public class CallBackHandle {
             	break;
             	case "/find":
             		sendTextMessage(senderId, "Bắt đầu tìm kiếm người lạ");
+            		sendChooseMessageF(senderId);
                     break;
             	case "/stop":
             		sendTextMessage(senderId, "Dừng tìm kiếm người lạ");
@@ -200,7 +204,7 @@ public class CallBackHandle {
                     break;
 
                 default:
-                    sendTextMessage(senderId, messageText);
+                    sendTextMessage(senderId, "Chat /help để được hướng dẫn");
             }
         } catch (MessengerApiException | MessengerIOException | MalformedURLException e) {
             
@@ -262,4 +266,22 @@ public class CallBackHandle {
         final MessagePayload messagePayload = MessagePayload.create(recipientId, MessagingType.RESPONSE, templateMessage);
         this.messenger.send(messagePayload);
     }
+    private void sendChooseMessageF(String recipientId) throws MessengerApiException, MessengerIOException {
+		System.out.println("sendChooseMessage");
+        List<QuickReply> quickReplies = new ArrayList<>();
+
+        quickReplies.add(TextQuickReply.create("Nam", "male"));
+        quickReplies.add(TextQuickReply.create("Nữ", "female"));
+
+        TextMessage message = TextMessage.create("Bạn muốn tìm kiếm đối phương nam hay nữ ?", Optional.of(quickReplies), Optional.empty());
+        this.messenger.send(MessagePayload.create(recipientId, MessagingType.RESPONSE, message));
+    }
+    public void handleQuickReplyMessageEventF(QuickReplyMessageEvent event) {
+		System.out.println("receivedQuickReplyMessage");
+		String text = event.payload().toString();
+		if(text.equalsIgnoreCase("male")==true)
+			sendTextMessage(event.senderId(),"Đang tìm đối phương nam . . .");
+		else if (text.equalsIgnoreCase("female")==true)
+			sendTextMessage(event.senderId(),"Đang tìm đối phương nữ . . .");
+	}
 }
