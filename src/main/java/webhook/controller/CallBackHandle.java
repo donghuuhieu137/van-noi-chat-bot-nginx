@@ -180,32 +180,23 @@ public class CallBackHandle {
 
         try {
             switch (messageText.toLowerCase()) {
+            	case "/help":
+            		sendTextMessage(senderId, "Chat với người lạ\n/find: tìm người lạ\n/stop: dừng tìm kiếm\n/end: kết thúc cuộc trò chuyện");
+            	break;
+            	case "/find":
+            		sendTextMessage(senderId, "Bắt đầu tìm kiếm người lạ");
+                    break;
+            	case "/stop":
+            		sendTextMessage(senderId, "Dừng tìm kiếm người lạ");
+                    break;
+            	case "/end":
+            		sendTextMessage(senderId, "Kết thúc cuộc trò chuyện");
+                    break;
                 case "generic":
                     sendGenericMessage(senderId);
                     break;
-
-                case "list":
-                    sendListMessageMessage(senderId);
-                    break;
-
                 case "receipt":
                     sendReceiptMessage(senderId);
-                    break;
-
-                case "quick reply":
-                    sendQuickReply(senderId);
-                    break;
-
-                case "read receipt":
-                    sendReadReceipt(senderId);
-                    break;
-
-                case "typing on":
-                    sendTypingOn(senderId);
-                    break;
-
-                case "typing off":
-                    sendTypingOff(senderId);
                     break;
 
                 default:
@@ -252,25 +243,6 @@ public class CallBackHandle {
         this.messenger.send(messagePayload);
     }
 
-    private void sendListMessageMessage(String recipientId) throws MessengerApiException, MessengerIOException, MalformedURLException {
-        List<Button> riftButtons = new ArrayList<>();
-        riftButtons.add(UrlButton.create("Open Web URL", new URL("https://www.oculus.com/en-us/rift/")));
-
-        List<Button> touchButtons = new ArrayList<>();
-        touchButtons.add(UrlButton.create("Open Web URL", new URL("https://www.oculus.com/en-us/touch/")));
-
-        final List<Element> elements = new ArrayList<>();
-
-        elements.add(
-                Element.create("rift", Optional.of("Next-generation virtual reality"), Optional.of(new URL("https://www.oculus.com/en-us/rift/")), Optional.empty(), Optional.of(riftButtons)));
-        elements.add(Element.create("touch", Optional.of("Your Hands, Now in VR"), Optional.of(new URL("https://www.oculus.com/en-us/touch/")), Optional.empty(), Optional.of(touchButtons)));
-
-        final ListTemplate listTemplate = ListTemplate.create(elements);
-        final TemplateMessage templateMessage = TemplateMessage.create(listTemplate);
-        final MessagePayload messagePayload = MessagePayload.create(recipientId, MessagingType.RESPONSE, templateMessage);
-        this.messenger.send(messagePayload);
-    }
-
     private void sendReceiptMessage(String recipientId) throws MessengerApiException, MessengerIOException, MalformedURLException {
         final String uniqueReceiptId = "order-" + Math.floor(Math.random() * 1000);
 
@@ -289,165 +261,5 @@ public class CallBackHandle {
         final TemplateMessage templateMessage = TemplateMessage.create(receiptTemplate);
         final MessagePayload messagePayload = MessagePayload.create(recipientId, MessagingType.RESPONSE, templateMessage);
         this.messenger.send(messagePayload);
-    }
-
-    private void sendQuickReply(String recipientId) throws MessengerApiException, MessengerIOException {
-        List<QuickReply> quickReplies = new ArrayList<>();
-
-        quickReplies.add(TextQuickReply.create("Action", "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_ACTION"));
-        quickReplies.add(TextQuickReply.create("Comedy", "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_COMEDY"));
-        quickReplies.add(TextQuickReply.create("Drama", "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_DRAMA"));
-        quickReplies.add(LocationQuickReply.create());
-
-        TextMessage message = TextMessage.create("What's your favorite movie genre?", Optional.of(quickReplies), Optional.empty());
-        messenger.send(MessagePayload.create(recipientId, MessagingType.RESPONSE, message));
-    }
-
-    private void sendReadReceipt(String recipientId) throws MessengerApiException, MessengerIOException {
-        this.messenger.send(SenderActionPayload.create(recipientId, SenderAction.MARK_SEEN));
-    }
-
-    private void sendTypingOn(String recipientId) throws MessengerApiException, MessengerIOException {
-        this.messenger.send(SenderActionPayload.create(recipientId, SenderAction.TYPING_ON));
-    }
-
-    private void sendTypingOff(String recipientId) throws MessengerApiException, MessengerIOException {
-        this.messenger.send(SenderActionPayload.create(recipientId, SenderAction.TYPING_OFF));
-    }
-
-    private void sendAccountLinking(String recipientId) throws MessengerApiException, MessengerIOException, MalformedURLException {
-        // Mandatory https
-        final LogInButton buttonIn = LogInButton.create(new URL("https://<YOUR_REST_CALLBACK_URL>"));
-        final LogOutButton buttonOut = LogOutButton.create();
-
-        final List<Button> buttons = Arrays.asList(buttonIn, buttonOut);
-        final ButtonTemplate buttonTemplate = ButtonTemplate.create("Log in to see an account linking callback", buttons);
-
-        final TemplateMessage templateMessage = TemplateMessage.create(buttonTemplate);
-        final MessagePayload messagePayload = MessagePayload.create(recipientId, MessagingType.RESPONSE, templateMessage);
-        this.messenger.send(messagePayload);
-    }
-
-    private void handleAttachmentMessageEvent(AttachmentMessageEvent event) {
-        logger.debug("Handling QuickReplyMessageEvent");
-        final String senderId = event.senderId();
-        logger.debug("senderId: {}", senderId);
-        for (Attachment attachment : event.attachments()) {
-            if (attachment.isRichMediaAttachment()) {
-                final RichMediaAttachment richMediaAttachment = attachment.asRichMediaAttachment();
-                final RichMediaAttachment.Type type = richMediaAttachment.type();
-                final URL url = richMediaAttachment.url();
-                logger.debug("Received rich media attachment of type '{}' with url: {}", type, url);
-                final String text = String.format("Media %s received (url: %s)", type.name(), url);
-                sendTextMessage(senderId, text);
-            } else if (attachment.isLocationAttachment()) {
-                final LocationAttachment locationAttachment = attachment.asLocationAttachment();
-                final double longitude = locationAttachment.longitude();
-                final double latitude = locationAttachment.latitude();
-                logger.debug("Received location information (long: {}, lat: {})", longitude, latitude);
-                final String text = String.format("Location received (long: %s, lat: %s)", String.valueOf(longitude), String.valueOf(latitude));
-                sendTextMessage(senderId, text);
-            }
-        }
-    }
-
-    private void handleQuickReplyMessageEvent(QuickReplyMessageEvent event) {
-        logger.debug("Handling QuickReplyMessageEvent");
-        final String payload = event.payload();
-        logger.debug("payload: {}", payload);
-        final String senderId = event.senderId();
-        logger.debug("senderId: {}", senderId);
-        final String messageId = event.messageId();
-        logger.debug("messageId: {}", messageId);
-        logger.info("Received quick reply for message '{}' with payload '{}'", messageId, payload);
-        sendTextMessage(senderId, "Quick reply tapped");
-    }
-
-    private void handlePostbackEvent(PostbackEvent event) {
-        logger.debug("Handling PostbackEvent");
-        final String payload = event.payload().orElse("empty payload");
-        logger.debug("payload: {}", payload);
-        final String senderId = event.senderId();
-        logger.debug("senderId: {}", senderId);
-        final Instant timestamp = event.timestamp();
-        logger.debug("timestamp: {}", timestamp);
-        logger.info("Received postback for user '{}' and page '{}' with payload '{}' at '{}'", senderId, senderId, payload, timestamp);
-        sendTextMessage(senderId, "Postback event tapped");
-    }
-
-    private void handleAccountLinkingEvent(AccountLinkingEvent event) {
-        logger.debug("Handling AccountLinkingEvent");
-        final String senderId = event.senderId();
-        logger.debug("senderId: {}", senderId);
-        final AccountLinkingEvent.Status accountLinkingStatus = event.status();
-        logger.debug("accountLinkingStatus: {}", accountLinkingStatus);
-        final String authorizationCode = event.authorizationCode().orElse("Empty authorization code!!!"); //You can throw an Exception
-        logger.debug("authorizationCode: {}", authorizationCode);
-        logger.info("Received account linking event for user '{}' with status '{}' and auth code '{}'", senderId, accountLinkingStatus, authorizationCode);
-        sendTextMessage(senderId, "AccountLinking event tapped");
-    }
-
-    private void handleOptInEvent(OptInEvent event) {
-        logger.debug("Handling OptInEvent");
-        final String senderId = event.senderId();
-        logger.debug("senderId: {}", senderId);
-        final String recipientId = event.recipientId();
-        logger.debug("recipientId: {}", recipientId);
-        final String passThroughParam = event.refPayload().orElse("empty payload");
-        logger.debug("passThroughParam: {}", passThroughParam);
-        final Instant timestamp = event.timestamp();
-        logger.debug("timestamp: {}", timestamp);
-
-        logger.info("Received authentication for user '{}' and page '{}' with pass through param '{}' at '{}'", senderId, recipientId, passThroughParam,
-                timestamp);
-        sendTextMessage(senderId, "Authentication successful");
-    }
-
-    private void handleMessageEchoEvent(MessageEchoEvent event) {
-        logger.debug("Handling MessageEchoEvent");
-        final String senderId = event.senderId();
-        logger.debug("senderId: {}", senderId);
-        final String recipientId = event.recipientId();
-        logger.debug("recipientId: {}", recipientId);
-        final String messageId = event.messageId();
-        logger.debug("messageId: {}", messageId);
-        final Instant timestamp = event.timestamp();
-        logger.debug("timestamp: {}", timestamp);
-
-        logger.info("Received echo for message '{}' that has been sent to recipient '{}' by sender '{}' at '{}'", messageId, recipientId, senderId, timestamp);
-        sendTextMessage(senderId, "MessageEchoEvent tapped");
-    }
-
-    private void handleMessageDeliveredEvent(MessageDeliveredEvent event) {
-        logger.debug("Handling MessageDeliveredEvent");
-        final String senderId = event.senderId();
-        logger.debug("senderId: {}", senderId);
-        final List<String> messageIds = event.messageIds().orElse(Collections.emptyList());
-        final Instant watermark = event.watermark();
-        logger.debug("watermark: {}", watermark);
-
-        messageIds.forEach(messageId -> {
-            logger.info("Received delivery confirmation for message '{}'", messageId);
-        });
-
-        logger.info("All messages before '{}' were delivered to user '{}'", watermark, senderId);
-    }
-
-    private void handleMessageReadEvent(MessageReadEvent event) {
-        logger.debug("Handling MessageReadEvent");
-        final String senderId = event.senderId();
-        logger.debug("senderId: {}", senderId);
-        final Instant watermark = event.watermark();
-        logger.debug("watermark: {}", watermark);
-
-        logger.info("All messages before '{}' were read by user '{}'", watermark, senderId);
-    }
-
-    private void handleFallbackEvent(Event event) {
-        logger.debug("Handling FallbackEvent");
-        final String senderId = event.senderId();
-        logger.debug("senderId: {}", senderId);
-
-        logger.info("Received unsupported message from user '{}'", senderId);
     }
 }
