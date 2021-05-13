@@ -129,7 +129,7 @@ public class CallBackHandle {
 		    		userService.sendSettingGender(event.senderId());
 		    		
 		    	}
-		    	if(userService.findUser(event.senderId()).get(0).getGender()==null) {
+		    	else if(userService.findUser(event.senderId()).get(0).getGender()==null) {
 		    		System.out.println("null genger");
 		    		webhookService.sendTextMessage(event.senderId(), "Để tiếp tục sử dụng Chatbot hãy cho bot biết giới tính của bạn bằng cách chat /setting");
 		    	}
