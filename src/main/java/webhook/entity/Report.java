@@ -17,11 +17,10 @@ public class Report extends BaseEntity{
 	@Column(name = "id")
 	private Integer id;
 	
-	@OneToOne
-	@JoinColumn(name = "user_id", nullable = false)
-	private User user_id;
+	@Column(name = "user_id", length = 200 ,nullable = false)
+	private String user_id;
 	
-	@Column(name = "note", length = 300)
+	@Column(name = "note", length = 600)
 	private String note = null;
 
 	public Integer getId() {
@@ -32,11 +31,11 @@ public class Report extends BaseEntity{
 		this.id = id;
 	}
 
-	public User getUser_id() {
+	public String getUser_id() {
 		return user_id;
 	}
 
-	public void setUser_id(User user_id) {
+	public void setUser_id(String user_id) {
 		this.user_id = user_id;
 	}
 

@@ -1,6 +1,8 @@
 package webhook.service.database;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -12,6 +14,11 @@ import org.springframework.stereotype.Service;
 import com.github.messenger4j.Messenger;
 import com.github.messenger4j.exception.MessengerApiException;
 import com.github.messenger4j.exception.MessengerIOException;
+import com.github.messenger4j.send.MessagePayload;
+import com.github.messenger4j.send.MessagingType;
+import com.github.messenger4j.send.message.TextMessage;
+import com.github.messenger4j.send.message.quickreply.QuickReply;
+import com.github.messenger4j.send.message.quickreply.TextQuickReply;
 import com.github.messenger4j.userprofile.UserProfile;
 
 import webhook.controller.CallBackHandle;
@@ -47,6 +54,34 @@ public class UserService {
 		String sql = "SELECT * FROM vannoichatbot.tbl_user WHERE status = 'FINDING' and gender = '" + partnerGender + "';";
 		Query query = entityManager.createNativeQuery(sql, User.class);
 		return query.getResultList();
+	}
+
+	public void sendSettingGender(String senderId) throws MessengerApiException, MessengerIOException {
+		System.out.println("sendSettingGender");
+        List<QuickReply> quickReplies = new ArrayList<>();
+
+        quickReplies.add(TextQuickReply.create("Nam", "settingmale"));
+        quickReplies.add(TextQuickReply.create("Nữ", "settingfemale"));
+
+        TextMessage message = TextMessage.create("Để tiếp tục sử dụng Chatbot hãy cho bot biết giới tính của bạn !!\nĐể cài đặt lại giới tính của mình chat /setting\nLưu ý: Nếu bạn khai báo sai giới tính của mình, bạn sẽ bị cấm chat!", Optional.of(quickReplies), Optional.empty());
+        this.messenger.send(MessagePayload.create(senderId, MessagingType.RESPONSE, message));
+	}
+
+	public void settingGender(String senderId, String gender) {
+		String saveGender = null;
+		switch (gender.toLowerCase()) {
+		case "settingmale":
+			saveGender = "male";
+			break;
+		case "settingfemale":
+			saveGender = "female";
+			break;
+		default:
+			break;
+		}
+		User user = findUser(senderId).get(0);
+		user.setGender(saveGender);
+		userRepo.save(user);
 	}
 
 }

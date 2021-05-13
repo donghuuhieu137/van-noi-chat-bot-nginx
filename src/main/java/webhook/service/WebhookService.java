@@ -56,8 +56,14 @@ public class WebhookService {
 			case "/end":
 					pairService.recivedEndReq(event.senderId());
 				break;
+			case "/report":
+					pairService.recivedReportReq(event.senderId());
+				break;
+			case "/setting":
+				userService.sendSettingGender(event.senderId());
+			break;
 			case "/hd":
-					sendTextMessage(event.senderId(), "Các câu lệnh:\n/find: Bot sẽ kết nối bạn với người lạ.\n/stop: Bot sẽ dừng tìm kiếm.\n/end: Bot sẽ kết thúc cuộc trò chuyện của bạn với người lạ.");
+					sendTextMessage(event.senderId(), "Các câu lệnh:\n/find: Bot sẽ kết nối bạn với người lạ.\n/stop: Bot sẽ dừng tìm kiếm.\n/end: Bot sẽ kết thúc cuộc trò chuyện của bạn với người lạ./setting: Cập nhật giới tính của bạn.\n/report: Tố cáo hành vi của đối phương.");
 				break;
 			default:
 				System.out.println("Send text to partner");
@@ -84,14 +90,37 @@ public class WebhookService {
 		
 	}
 
-	public void receivedQuickReplyMessage(QuickReplyMessageEvent event) {
+	public void receivedQuickReplyMessage(QuickReplyMessageEvent event) throws MessengerApiException, MessengerIOException {
 		System.out.println("receivedQuickReplyMessage");
-		String text = event.payload().toString();
-		if(text.equalsIgnoreCase("male")==true)
+		String text = event.payload().toString().toLowerCase();
+		switch (text) {
+		case "choosemale":
 			sendTextMessage(event.senderId(),"Đang tìm đối phương nam . . .");
-		else if (text.equalsIgnoreCase("female")==true)
+			pairService.matchUser(event);
+			break;
+		case "choosefemale":
 			sendTextMessage(event.senderId(),"Đang tìm đối phương nữ . . .");
-		pairService.matchUser(event);
+			pairService.matchUser(event);
+			break;
+		case "yes":
+			pairService.sendChooseReport(event.senderId());
+			break;
+		case "no":
+			sendTextMessage(event.senderId(), "Bot đã hủy thao tác tố cáo");
+			break;
+		case "toxic":
+		case "clone":
+		case "fakegender":
+			pairService.confirmReportReq(event.senderId(),text);
+			break;
+		case "settingmale":
+		case "settingfemale":
+			userService.settingGender(event.senderId(),text);
+			break;
+		default:
+			System.out.println("invalid quickreply");
+			break;
+		}
 	}
 
 	public void receivedAttachmentMessage(AttachmentMessageEvent event) throws MalformedURLException, MessengerApiException, MessengerIOException {

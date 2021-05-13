@@ -22,9 +22,11 @@ import com.github.messenger4j.webhook.event.QuickReplyMessageEvent;
 
 import webhook.controller.CallBackHandle;
 import webhook.entity.Log;
+import webhook.entity.Report;
 import webhook.entity.Session;
 import webhook.entity.User;
 import webhook.repository.LogRepo;
+import webhook.repository.ReportRepo;
 import webhook.repository.UserRepo;
 import webhook.service.WebhookService;
 import webhook.service.database.SessionService;
@@ -38,6 +40,9 @@ public class PairService {
 	
 	@Autowired
 	private SessionService sessionService;
+	
+	@Autowired
+	private ReportRepo reportRepo;
 	
 	@Autowired
 	private WebhookService webhookService;
@@ -74,8 +79,8 @@ public class PairService {
 		System.out.println("sendChooseMessage");
         List<QuickReply> quickReplies = new ArrayList<>();
 
-        quickReplies.add(TextQuickReply.create("Nam", "male"));
-        quickReplies.add(TextQuickReply.create("Nữ", "female"));
+        quickReplies.add(TextQuickReply.create("Nam", "choosemale"));
+        quickReplies.add(TextQuickReply.create("Nữ", "choosefemale"));
 
         TextMessage message = TextMessage.create("Bạn muốn tìm kiếm đối phương nam hay nữ ?", Optional.of(quickReplies), Optional.empty());
         this.messenger.send(MessagePayload.create(recipientId, MessagingType.RESPONSE, message));
@@ -145,5 +150,59 @@ public class PairService {
 			default:
 				System.out.println(user.getStatus()+" is invalid");
 		}
+	}
+
+	public void confirmReportReq(String senderId, String note) {
+		System.out.println("recivedReportReq");
+		Report report = new Report();
+		report.setUser_id(senderId);
+		report.setCreatedDate(LocalDateTime.now());
+		String text = null;
+		switch (note.toLowerCase()) {
+		case "clone":
+			text = "Tài khoản ảo";
+			break;
+		case "toxic":
+			text = "Ngôn ngữ thô tục";
+			break;
+		case "fakegender":
+			text = "Giả mạo giới tính";
+			break;
+		default:
+			text = null;
+			break;
+		}
+		report.setNote(text);
+		reportRepo.save(report);
+		webhookService.sendTextMessage(senderId, "Tố cáo của bạn đã được gửi!\nCảm ơn bạn đã chung tay với Vân Nội Chatbot cùng làm trong sạch cộng đồng!");
+	}
+	
+	public void recivedReportReq(String recipientId) throws MessengerApiException, MessengerIOException {
+		System.out.println("sendChooseMessage");
+        if(userService.findUser(recipientId).get(0).getStatus()=="MATCHED") {
+        	List<QuickReply> quickReplies = new ArrayList<>();
+
+            quickReplies.add(TextQuickReply.create("Yes", "yes"));
+            quickReplies.add(TextQuickReply.create("No", "no"));
+
+            TextMessage message = TextMessage.create("Bạn có muốn tố cáo đối phương ?\nLưu ý: Nếu bạn lạm dụng chức năng này, bạn cũng sẽ bị phạt!", Optional.of(quickReplies), Optional.empty());
+            this.messenger.send(MessagePayload.create(recipientId, MessagingType.RESPONSE, message));
+        }
+        else {
+        	webhookService.sendTextMessage(recipientId, "Bạn hiện vẫn chưa được kết đôi!");
+        }
+    }
+	
+	public void sendChooseReport(String recipientId) throws MessengerApiException, MessengerIOException {
+		System.out.println("sendChooseReport");
+        List<QuickReply> quickReplies = new ArrayList<>();
+
+        quickReplies.add(TextQuickReply.create("Ngôn ngữ thô tục", "toxic"));
+        quickReplies.add(TextQuickReply.create("Tài khoản ảo", "clone"));
+        quickReplies.add(TextQuickReply.create("Giả mạo giới tính", "fakegender"));
+
+        TextMessage message = TextMessage.create("Lí do bạn muốn tố cáo đối phương?\n", Optional.of(quickReplies), Optional.empty());
+        this.messenger.send(MessagePayload.create(recipientId, MessagingType.RESPONSE, message));
+		
 	}
 }
