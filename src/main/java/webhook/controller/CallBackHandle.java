@@ -129,25 +129,23 @@ public class CallBackHandle {
 		    		userService.sendSettingGender(event.senderId());
 		    		
 		    	}
-		    	else if(userService.findUser(event.senderId()).get(0).getGender()==null) {
-		    		System.out.println("null genger");
-		    		webhookService.sendTextMessage(event.senderId(), "Để tiếp tục sử dụng Chatbot hãy cho bot biết giới tính của bạn bằng cách chat /setting");
+		    	else {
+		    		if (event.isTextMessageEvent())
+			    	{
+			    		System.out.println(event.asTextMessageEvent().text());
+					    webhookService.receivedTextMessage(event.asTextMessageEvent());
+			    	}
+				    else if(event.isAttachmentMessageEvent())
+				    	webhookService.receivedAttachmentMessage(event.asAttachmentMessageEvent());
+				    else if(event.isQuickReplyMessageEvent())
+				    	webhookService.receivedQuickReplyMessage(event.asQuickReplyMessageEvent());
+				    else if(event.isPostbackEvent())
+				    	webhookService.receivedPostBackMessage(event.asPostbackEvent());
+				    else {
+				    	handleException(event.senderId(), "ERROR!!");
+				    }
 		    	}
 		    	
-		    	if (event.isTextMessageEvent())
-		    	{
-		    		System.out.println(event.asTextMessageEvent().text());
-				    webhookService.receivedTextMessage(event.asTextMessageEvent());
-		    	}
-			    else if(event.isAttachmentMessageEvent())
-			    	webhookService.receivedAttachmentMessage(event.asAttachmentMessageEvent());
-			    else if(event.isQuickReplyMessageEvent())
-			    	webhookService.receivedQuickReplyMessage(event.asQuickReplyMessageEvent());
-			    else if(event.isPostbackEvent())
-			    	webhookService.receivedPostBackMessage(event.asPostbackEvent());
-			    else {
-			    	handleException(event.senderId(), "ERROR!!");
-			    }
 			} catch (MessengerApiException | MessengerIOException | MalformedURLException e) {
 				logger.debug(e.getMessage());
 				e.printStackTrace();

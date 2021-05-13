@@ -190,7 +190,7 @@ public class PairService {
 	
 	public void recivedReportReq(String recipientId) throws MessengerApiException, MessengerIOException {
 		System.out.println("sendChooseMessage");
-        if(userService.findUser(recipientId).get(0).getStatus()=="MATCHED") {
+        if(userService.findUser(recipientId).get(0).getStatus().equalsIgnoreCase("MATCHED")) {
         	List<QuickReply> quickReplies = new ArrayList<>();
 
             quickReplies.add(TextQuickReply.create("Yes", "yes"));

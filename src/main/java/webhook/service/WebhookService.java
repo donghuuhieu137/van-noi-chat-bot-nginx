@@ -46,7 +46,12 @@ public class WebhookService {
 	public void receivedTextMessage(TextMessageEvent event) throws MessengerApiException, MessengerIOException {
 		String text = event.text();
 		System.out.println("receivedTextMessage");
-		switch(text.toLowerCase()) {
+		if(userService.findUser(event.senderId()).get(0).getGender()==null) {
+    		System.out.println("null gender");
+    		sendTextMessage(event.senderId(), "Để tiếp tục sử dụng Chatbot hãy cho bot biết giới tính của bạn bằng cách chat /setting");
+    	}
+		else {
+			switch(text.toLowerCase()) {
 			case "/find":
 					pairService.recivedMatchReq(event.senderId());
 				break;
@@ -63,7 +68,7 @@ public class WebhookService {
 				userService.sendSettingGender(event.senderId());
 			break;
 			case "/hd":
-					sendTextMessage(event.senderId(), "Các câu lệnh:\n/find: Bot sẽ kết nối bạn với người lạ.\n/stop: Bot sẽ dừng tìm kiếm.\n/end: Bot sẽ kết thúc cuộc trò chuyện của bạn với người lạ./setting: Cập nhật giới tính của bạn.\n/report: Tố cáo hành vi của đối phương.");
+					sendTextMessage(event.senderId(), "Các câu lệnh:\n\n/find: Bot sẽ kết nối bạn với người lạ.\n\n/stop: Bot sẽ dừng tìm kiếm.\n\n/end: Bot sẽ kết thúc cuộc trò chuyện của bạn với người lạ.\n\n/setting: Cập nhật giới tính của bạn.\n\n/report: Tố cáo hành vi của đối phương.");
 				break;
 			default:
 				System.out.println("Send text to partner");
@@ -72,6 +77,7 @@ public class WebhookService {
 					String partnerId = sessionService.findPartner(user.getId());
 					sendTextMessage(partnerId, text);
 				}
+			}
 		}
 			
 	}
