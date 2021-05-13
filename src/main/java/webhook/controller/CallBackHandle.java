@@ -113,43 +113,43 @@ public class CallBackHandle {
     public ResponseEntity<Void> sendMessenger(@RequestBody final String payload, @RequestHeader(SIGNATURE_HEADER_NAME) String signature) throws MessengerVerificationException{
     	
 		this.messenger.onReceiveEvents(payload, Optional.of(signature), event -> {
-//			if (event.isTextMessageEvent())
-//	    	{
-//			 handleTextMessageEvent(event.asTextMessageEvent());
-//	    	}
-//			else if(event.isQuickReplyMessageEvent()) {
-//				handleQuickReplyMessageEventF(event.asQuickReplyMessageEvent());
-//			}
-			
-		    try {
-		    	if(userService.findUser(event.senderId()).isEmpty()) {
-		    		System.out.println("new user");
-		    		userService.newUser(event.senderId());
-		    		webhookService.sendTextMessage(event.senderId(), "Hello there");
-		    		userService.sendSettingGender(event.senderId());
-		    		
-		    	}
-		    	else {
-		    		if (event.isTextMessageEvent())
-			    	{
-			    		System.out.println(event.asTextMessageEvent().text());
-					    webhookService.receivedTextMessage(event.asTextMessageEvent());
-			    	}
-				    else if(event.isAttachmentMessageEvent())
-				    	webhookService.receivedAttachmentMessage(event.asAttachmentMessageEvent());
-				    else if(event.isQuickReplyMessageEvent())
-				    	webhookService.receivedQuickReplyMessage(event.asQuickReplyMessageEvent());
-				    else if(event.isPostbackEvent())
-				    	webhookService.receivedPostBackMessage(event.asPostbackEvent());
-				    else {
-				    	handleException(event.senderId(), "ERROR!!");
-				    }
-		    	}
-		    	
-			} catch (MessengerApiException | MessengerIOException | MalformedURLException e) {
-				logger.debug(e.getMessage());
-				e.printStackTrace();
+			if (event.isTextMessageEvent())
+	    	{
+			 handleTextMessageEvent(event.asTextMessageEvent());
+	    	}
+			else if(event.isQuickReplyMessageEvent()) {
+				handleQuickReplyMessageEventF(event.asQuickReplyMessageEvent());
 			}
+			
+//		    try {
+//		    	if(userService.findUser(event.senderId()).isEmpty()) {
+//		    		System.out.println("new user");
+//		    		userService.newUser(event.senderId());
+//		    		webhookService.sendTextMessage(event.senderId(), "Hello there");
+//		    		userService.sendSettingGender(event.senderId());
+//		    		
+//		    	}
+//		    	else {
+//		    		if (event.isTextMessageEvent())
+//			    	{
+//			    		System.out.println(event.asTextMessageEvent().text());
+//					    webhookService.receivedTextMessage(event.asTextMessageEvent());
+//			    	}
+//				    else if(event.isAttachmentMessageEvent())
+//				    	webhookService.receivedAttachmentMessage(event.asAttachmentMessageEvent());
+//				    else if(event.isQuickReplyMessageEvent())
+//				    	webhookService.receivedQuickReplyMessage(event.asQuickReplyMessageEvent());
+//				    else if(event.isPostbackEvent())
+//				    	webhookService.receivedPostBackMessage(event.asPostbackEvent());
+//				    else {
+//				    	handleException(event.senderId(), "ERROR!!");
+//				    }
+//		    	}
+//		    	
+//			} catch (MessengerApiException | MessengerIOException | MalformedURLException e) {
+//				logger.debug(e.getMessage());
+//				e.printStackTrace();
+//			}
 		});
 		
         return ResponseEntity.status(HttpStatus.OK).build();
