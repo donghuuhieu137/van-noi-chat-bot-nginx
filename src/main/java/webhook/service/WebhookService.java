@@ -46,7 +46,7 @@ public class WebhookService {
 	public void receivedTextMessage(TextMessageEvent event) throws MessengerApiException, MessengerIOException {
 		String text = event.text();
 		System.out.println("receivedTextMessage");
-		if(userService.findUser(event.senderId()).get(0).getGender()==null) {
+		if(userService.findUser(event.senderId()).get(0).getGender()==null && !text.equalsIgnoreCase("/setting")) {
     		System.out.println("null gender");
     		sendTextMessage(event.senderId(), "Để tiếp tục sử dụng Chatbot hãy cho bot biết giới tính của bạn bằng cách chat /setting");
     	}
