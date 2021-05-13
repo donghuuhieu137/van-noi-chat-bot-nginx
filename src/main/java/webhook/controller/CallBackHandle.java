@@ -127,8 +127,13 @@ public class CallBackHandle {
 		    		userService.newUser(event.senderId());
 		    		webhookService.sendTextMessage(event.senderId(), "Hello there");
 		    		userService.sendSettingGender(event.senderId());
-		    		webhookService.sendTextMessage(event.senderId(), "Cài đặt giới tính thành công !!\nBạn đã sẵn sàng sử dụng chatbot\nChat /hd để được hướng dẫn ");
+		    		
 		    	}
+		    	if(userService.findUser(event.senderId()).get(0).getGender()==null) {
+		    		System.out.println("null genger");
+		    		webhookService.sendTextMessage(event.senderId(), "Để tiếp tục sử dụng Chatbot hãy cho bot biết giới tính của bạn bằng cách chat /setting");
+		    	}
+		    	
 		    	if (event.isTextMessageEvent())
 		    	{
 		    		System.out.println(event.asTextMessageEvent().text());

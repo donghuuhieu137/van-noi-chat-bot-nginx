@@ -88,7 +88,18 @@ public class PairService {
 
 	public void matchUser(QuickReplyMessageEvent event) {
 		System.out.println("matchUser");
-		String partnerGender = event.payload().toString();
+		String text = event.payload().toString();
+		String partnerGender = null;
+		switch (text) {
+		case "choosemale":
+			partnerGender = "male";
+			break;
+		case "choosefemale":
+			partnerGender = "female";
+			break;
+		default:
+			break;
+		}
 		User user = userService.findUser(event.senderId()).get(0);
 		user.setPartnerGender(partnerGender);
 		List<User> listUser = userService.findPartner(partnerGender,user.getGender());

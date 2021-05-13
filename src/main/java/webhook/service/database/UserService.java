@@ -24,11 +24,15 @@ import com.github.messenger4j.userprofile.UserProfile;
 import webhook.controller.CallBackHandle;
 import webhook.entity.User;
 import webhook.repository.UserRepo;
+import webhook.service.WebhookService;
 
 @Service
 public class UserService {
 
 	@PersistenceContext protected EntityManager entityManager;
+	
+	@Autowired
+	WebhookService webhookService;
 	
 	@Autowired
 	private UserRepo userRepo;
@@ -39,7 +43,7 @@ public class UserService {
 	public void newUser(String id) throws MessengerApiException, MessengerIOException {
 		UserProfile userProfile = this.messenger.queryUserProfile(id);
 		System.out.println(userProfile.firstName());
-		User user = new User(id, userProfile.firstName(), userProfile.lastName(), userProfile.gender().toString(),null, userProfile.profilePicture());
+		User user = new User(id, userProfile.firstName(), userProfile.lastName(), null, null, userProfile.profilePicture());
 		user.setStatus("FREE");
 		userRepo.save(user);
 	}
@@ -63,7 +67,7 @@ public class UserService {
         quickReplies.add(TextQuickReply.create("Nam", "settingmale"));
         quickReplies.add(TextQuickReply.create("Nữ", "settingfemale"));
 
-        TextMessage message = TextMessage.create("Để tiếp tục sử dụng Chatbot hãy cho bot biết giới tính của bạn !!\nĐể cài đặt lại giới tính của mình chat /setting\nLưu ý: Nếu bạn khai báo sai giới tính của mình, bạn sẽ bị cấm chat!", Optional.of(quickReplies), Optional.empty());
+        TextMessage message = TextMessage.create("Hãy cho bot biết giới tính của bạn !!\n\nĐể cài đặt lại giới tính của mình chat /setting\n\nLưu ý: Nếu bạn khai báo sai giới tính của mình, bạn sẽ bị cấm chat!", Optional.of(quickReplies), Optional.empty());
         this.messenger.send(MessagePayload.create(senderId, MessagingType.RESPONSE, message));
 	}
 
@@ -82,6 +86,8 @@ public class UserService {
 		User user = findUser(senderId).get(0);
 		user.setGender(saveGender);
 		userRepo.save(user);
+
+        webhookService.sendTextMessage(senderId, "Cài đặt giới tính thành công !!\nBạn đã sẵn sàng sử dụng chatbot\nChat /hd để được hướng dẫn ");
 	}
 
 }
