@@ -130,24 +130,29 @@ public class WebhookService {
 	}
 
 	public void receivedAttachmentMessage(AttachmentMessageEvent event) throws MalformedURLException, MessengerApiException, MessengerIOException {
-		final String senderId = event.senderId();
-		
-		for (Attachment attachment : event.attachments()) {
-			if(attachment.isRichMediaAttachment()) {
-				final RichMediaAttachment richMediaAttachment = attachment.asRichMediaAttachment();
-				final RichMediaAttachment.Type type = richMediaAttachment.type();
-				sendTextMessage(senderId, type.toString());
-				final URL url = richMediaAttachment.url();
-				if(type.toString() == "IMAGE")
-					sendMediaMessage(senderId, Type.IMAGE , url);
-				else if(type.toString() == "VIDEO")
-					sendMediaMessage(senderId, Type.VIDEO , url);
-				else if(type.toString() == "FILE")
-					sendMediaMessage(senderId, Type.FILE , url);
-				else if(type.toString() == "AUDIO")
-					sendMediaMessage(senderId, Type.AUDIO , url);
+		if(userService.findUser(event.senderId()).get(0).getGender()==null) {
+    		System.out.println("null gender");
+    		sendTextMessage(event.senderId(), "Để tiếp tục sử dụng Chatbot hãy cho bot biết giới tính của bạn bằng cách chat /setting");
+    	}
+		else
+			for (Attachment attachment : event.attachments()) {
+				if(attachment.isRichMediaAttachment()) {
+					final RichMediaAttachment richMediaAttachment = attachment.asRichMediaAttachment();
+					final RichMediaAttachment.Type type = richMediaAttachment.type();
+					final URL url = richMediaAttachment.url();
+					System.out.println("Send text to partner");
+					User user = userService.findUser(event.senderId()).get(0);
+					final String partnerId = sessionService.findPartner(user.getId());
+					if(type.toString() == "IMAGE")
+						sendMediaMessage(partnerId, Type.IMAGE , url);
+					else if(type.toString() == "VIDEO")
+						sendMediaMessage(partnerId, Type.VIDEO , url);
+					else if(type.toString() == "FILE")
+						sendMediaMessage(partnerId, Type.FILE , url);
+					else if(type.toString() == "AUDIO")
+						sendMediaMessage(partnerId, Type.AUDIO , url);
+				}
 			}
-		}
 		
 	}
 	private void sendMediaMessage(String recipientId, Type type, URL url) throws MessengerApiException, MessengerIOException, MalformedURLException {
