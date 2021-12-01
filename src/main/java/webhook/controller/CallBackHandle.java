@@ -113,43 +113,43 @@ public class CallBackHandle {
     public ResponseEntity<Void> sendMessenger(@RequestBody final String payload, @RequestHeader(SIGNATURE_HEADER_NAME) String signature) throws MessengerVerificationException{
     	
 		this.messenger.onReceiveEvents(payload, Optional.of(signature), event -> {
-			if (event.isTextMessageEvent())
-	    	{
-			 handleTextMessageEvent(event.asTextMessageEvent());
-	    	}
-			else if(event.isQuickReplyMessageEvent()) {
-				handleQuickReplyMessageEventF(event.asQuickReplyMessageEvent());
-			}
-			
-//		    try {
-//		    	if(userService.findUser(event.senderId()).isEmpty()) {
-//		    		System.out.println("new user");
-//		    		userService.newUser(event.senderId());
-//		    		webhookService.sendTextMessage(event.senderId(), "Hello there");
-//		    		userService.sendSettingGender(event.senderId());
-//		    		
-//		    	}
-//		    	else {
-//		    		if (event.isTextMessageEvent())
-//			    	{
-//			    		System.out.println(event.asTextMessageEvent().text());
-//					    webhookService.receivedTextMessage(event.asTextMessageEvent());
-//			    	}
-//				    else if(event.isAttachmentMessageEvent())
-//				    	webhookService.receivedAttachmentMessage(event.asAttachmentMessageEvent());
-//				    else if(event.isQuickReplyMessageEvent())
-//				    	webhookService.receivedQuickReplyMessage(event.asQuickReplyMessageEvent());
-//				    else if(event.isPostbackEvent())
-//				    	webhookService.receivedPostBackMessage(event.asPostbackEvent());
-//				    else {
-//				    	handleException(event.senderId(), "ERROR!!");
-//				    }
-//		    	}
-//		    	
-//			} catch (MessengerApiException | MessengerIOException | MalformedURLException e) {
-//				logger.debug(e.getMessage());
-//				e.printStackTrace();
+//			if (event.isTextMessageEvent())
+//	    	{
+//			 handleTextMessageEvent(event.asTextMessageEvent());
+//	    	}
+//			else if(event.isQuickReplyMessageEvent()) {
+//				handleQuickReplyMessageEventF(event.asQuickReplyMessageEvent());
 //			}
+			
+		    try {
+		    	if(userService.findUser(event.senderId()).isEmpty()) {
+		    		System.out.println("new user");
+		    		userService.newUser(event.senderId());
+		    		webhookService.sendTextMessage(event.senderId(), "Hello there");
+		    		userService.sendSettingGender(event.senderId());
+		    		
+		    	}
+		    	else {
+		    		if (event.isTextMessageEvent())
+			    	{
+			    		System.out.println(event.asTextMessageEvent().text());
+					    webhookService.receivedTextMessage(event.asTextMessageEvent());
+			    	}
+				    else if(event.isAttachmentMessageEvent())
+				    	webhookService.receivedAttachmentMessage(event.asAttachmentMessageEvent());
+				    else if(event.isQuickReplyMessageEvent())
+				    	webhookService.receivedQuickReplyMessage(event.asQuickReplyMessageEvent());
+				    else if(event.isPostbackEvent())
+				    	webhookService.receivedPostBackMessage(event.asPostbackEvent());
+				    else {
+				    	handleException(event.senderId(), "ERROR!!");
+				    }
+		    	}
+		    	
+			} catch (MessengerApiException | MessengerIOException | MalformedURLException e) {
+				logger.debug(e.getMessage());
+				e.printStackTrace();
+			}
 		});
 		
         return ResponseEntity.status(HttpStatus.OK).build();
@@ -175,46 +175,46 @@ public class CallBackHandle {
         this.messenger.send(messagePayload);
     }
 	
-	// facebook
-	private void handleTextMessageEvent(TextMessageEvent event) {
-        logger.debug("Received TextMessageEvent: {}", event);
-
-        final String messageId = event.messageId();
-        final String messageText = event.text();
-        final String senderId = event.senderId();
-        final Instant timestamp = event.timestamp();
-
-        logger.info("Received message '{}' with text '{}' from user '{}' at '{}'", messageId, messageText, senderId, timestamp);
-
-        try {
-            switch (messageText.toLowerCase()) {
-            	case "/help":
-            		sendTextMessage(senderId, "Chat với người lạ\n/find: tìm người lạ\n/stop: dừng tìm kiếm\n/end: kết thúc cuộc trò chuyện");
-            	break;
-            	case "/find":
-            		sendTextMessage(senderId, "Bắt đầu tìm kiếm người lạ");
-            		sendChooseMessageF(senderId);
-                    break;
-            	case "/stop":
-            		sendTextMessage(senderId, "Dừng tìm kiếm người lạ");
-                    break;
-            	case "/end":
-            		sendTextMessage(senderId, "Kết thúc cuộc trò chuyện");
-                    break;
-                case "generic":
-                    sendGenericMessage(senderId);
-                    break;
-                case "receipt":
-                    sendReceiptMessage(senderId);
-                    break;
-
-                default:
-                    sendTextMessage(senderId, "Chat /help để được hướng dẫn");
-            }
-        } catch (MessengerApiException | MessengerIOException | MalformedURLException e) {
-            
-        }  
-    }
+//	// facebook
+//	private void handleTextMessageEvent(TextMessageEvent event) {
+//        logger.debug("Received TextMessageEvent: {}", event);
+//
+//        final String messageId = event.messageId();
+//        final String messageText = event.text();
+//        final String senderId = event.senderId();
+//        final Instant timestamp = event.timestamp();
+//
+//        logger.info("Received message '{}' with text '{}' from user '{}' at '{}'", messageId, messageText, senderId, timestamp);
+//
+//        try {
+//            switch (messageText.toLowerCase()) {
+//            	case "/help":
+//            		sendTextMessage(senderId, "Chat với người lạ\n/find: tìm người lạ\n/stop: dừng tìm kiếm\n/end: kết thúc cuộc trò chuyện");
+//            	break;
+//            	case "/find":
+//            		sendTextMessage(senderId, "Bắt đầu tìm kiếm người lạ");
+//            		sendChooseMessageF(senderId);
+//                    break;
+//            	case "/stop":
+//            		sendTextMessage(senderId, "Dừng tìm kiếm người lạ");
+//                    break;
+//            	case "/end":
+//            		sendTextMessage(senderId, "Kết thúc cuộc trò chuyện");
+//                    break;
+//                case "generic":
+//                    sendGenericMessage(senderId);
+//                    break;
+//                case "receipt":
+//                    sendReceiptMessage(senderId);
+//                    break;
+//
+//                default:
+//                    sendTextMessage(senderId, "Chat /help để được hướng dẫn");
+//            }
+//        } catch (MessengerApiException | MessengerIOException | MalformedURLException e) {
+//            
+//        }  
+//    }
 	private void sendTextMessage(String recipientId, String text) {
         try {
             final IdRecipient recipient = IdRecipient.create(recipientId);
@@ -231,46 +231,46 @@ public class CallBackHandle {
     }
 
 
-    private void sendGenericMessage(String recipientId) throws MessengerApiException, MessengerIOException, MalformedURLException {
-        List<Button> riftButtons = new ArrayList<>();
-        riftButtons.add(UrlButton.create("Open Web URL", new URL("https://www.oculus.com/en-us/rift/")));
-        riftButtons.add(PostbackButton.create("Call Postback", "Payload for first bubble"));
-
-        List<Button> touchButtons = new ArrayList<>();
-        touchButtons.add(UrlButton.create("Open Web URL", new URL("https://www.oculus.com/en-us/touch/")));
-        touchButtons.add(PostbackButton.create("Call Postback", "Payload for second bubble"));
-
-        final List<Element> elements = new ArrayList<>();
-
-        elements.add(
-                Element.create("rift", Optional.of("Next-generation virtual reality"), Optional.of(new URL("https://www.oculus.com/en-us/rift/")), Optional.empty(), Optional.of(riftButtons)));
-        elements.add(Element.create("touch", Optional.of("Your Hands, Now in VR"), Optional.of(new URL("https://www.oculus.com/en-us/touch/")), Optional.empty(), Optional.of(touchButtons)));
-
-        final GenericTemplate genericTemplate = GenericTemplate.create(elements);
-        final TemplateMessage templateMessage = TemplateMessage.create(genericTemplate);
-        final MessagePayload messagePayload = MessagePayload.create(recipientId, MessagingType.RESPONSE, templateMessage);
-        this.messenger.send(messagePayload);
-    }
-
-    private void sendReceiptMessage(String recipientId) throws MessengerApiException, MessengerIOException, MalformedURLException {
-        final String uniqueReceiptId = "order-" + Math.floor(Math.random() * 1000);
-
-        final List<Item> items = new ArrayList<>();
-
-        items.add(Item.create("Oculus Rift", 599.00f, Optional.of("Includes: headset, sensor, remote"), Optional.of(1), Optional.of("USD"),
-        		Optional.of(new URL(RESOURCE_URL + "/assets/riftsq.png"))));
-        items.add(Item.create("Samsung Gear VR", 99.99f, Optional.of("Frost White"), Optional.of(1), Optional.of("USD"), Optional.of(new URL(RESOURCE_URL + "/assets/gearvrsq.png"))));
-
-        final ReceiptTemplate receiptTemplate = ReceiptTemplate
-                .create("Peter Chang", uniqueReceiptId, "Visa 1234", "USD", Summary.create(626.66f, Optional.of(698.99f), Optional.of(57.67f), Optional.of(20.00f)),
-                		Optional.of(Address.create("1 Hacker Way", "Menlo Park", "94025", "CA", "US")), Optional.of(items),
-                		Optional.of(Arrays.asList(Adjustment.create("New Customer Discount", -50f), Adjustment.create("$100 Off Coupon", -100f))),
-                		Optional.of("The Boring Company"), Optional.of(new URL("https://www.boringcompany.com/")), Optional.of(true), Optional.of(Instant.ofEpochMilli(1428444852L)));
-
-        final TemplateMessage templateMessage = TemplateMessage.create(receiptTemplate);
-        final MessagePayload messagePayload = MessagePayload.create(recipientId, MessagingType.RESPONSE, templateMessage);
-        this.messenger.send(messagePayload);
-    }
+//    private void sendGenericMessage(String recipientId) throws MessengerApiException, MessengerIOException, MalformedURLException {
+//        List<Button> riftButtons = new ArrayList<>();
+//        riftButtons.add(UrlButton.create("Open Web URL", new URL("https://www.oculus.com/en-us/rift/")));
+//        riftButtons.add(PostbackButton.create("Call Postback", "Payload for first bubble"));
+//
+//        List<Button> touchButtons = new ArrayList<>();
+//        touchButtons.add(UrlButton.create("Open Web URL", new URL("https://www.oculus.com/en-us/touch/")));
+//        touchButtons.add(PostbackButton.create("Call Postback", "Payload for second bubble"));
+//
+//        final List<Element> elements = new ArrayList<>();
+//
+//        elements.add(
+//                Element.create("rift", Optional.of("Next-generation virtual reality"), Optional.of(new URL("https://www.oculus.com/en-us/rift/")), Optional.empty(), Optional.of(riftButtons)));
+//        elements.add(Element.create("touch", Optional.of("Your Hands, Now in VR"), Optional.of(new URL("https://www.oculus.com/en-us/touch/")), Optional.empty(), Optional.of(touchButtons)));
+//
+//        final GenericTemplate genericTemplate = GenericTemplate.create(elements);
+//        final TemplateMessage templateMessage = TemplateMessage.create(genericTemplate);
+//        final MessagePayload messagePayload = MessagePayload.create(recipientId, MessagingType.RESPONSE, templateMessage);
+//        this.messenger.send(messagePayload);
+//    }
+//
+//    private void sendReceiptMessage(String recipientId) throws MessengerApiException, MessengerIOException, MalformedURLException {
+//        final String uniqueReceiptId = "order-" + Math.floor(Math.random() * 1000);
+//
+//        final List<Item> items = new ArrayList<>();
+//
+//        items.add(Item.create("Oculus Rift", 599.00f, Optional.of("Includes: headset, sensor, remote"), Optional.of(1), Optional.of("USD"),
+//        		Optional.of(new URL(RESOURCE_URL + "/assets/riftsq.png"))));
+//        items.add(Item.create("Samsung Gear VR", 99.99f, Optional.of("Frost White"), Optional.of(1), Optional.of("USD"), Optional.of(new URL(RESOURCE_URL + "/assets/gearvrsq.png"))));
+//
+//        final ReceiptTemplate receiptTemplate = ReceiptTemplate
+//                .create("Peter Chang", uniqueReceiptId, "Visa 1234", "USD", Summary.create(626.66f, Optional.of(698.99f), Optional.of(57.67f), Optional.of(20.00f)),
+//                		Optional.of(Address.create("1 Hacker Way", "Menlo Park", "94025", "CA", "US")), Optional.of(items),
+//                		Optional.of(Arrays.asList(Adjustment.create("New Customer Discount", -50f), Adjustment.create("$100 Off Coupon", -100f))),
+//                		Optional.of("The Boring Company"), Optional.of(new URL("https://www.boringcompany.com/")), Optional.of(true), Optional.of(Instant.ofEpochMilli(1428444852L)));
+//
+//        final TemplateMessage templateMessage = TemplateMessage.create(receiptTemplate);
+//        final MessagePayload messagePayload = MessagePayload.create(recipientId, MessagingType.RESPONSE, templateMessage);
+//        this.messenger.send(messagePayload);
+//    }
     private void sendChooseMessageF(String recipientId) throws MessengerApiException, MessengerIOException {
 		System.out.println("sendChooseMessage");
         List<QuickReply> quickReplies = new ArrayList<>();
