@@ -49,13 +49,13 @@ public class UserService {
 	}
 	
 	public List<User> findUser(String id) {
-		String sql = "SELECT * FROM vannoichatbot.tbl_user WHERE id = "+id+";";
+		String sql = "SELECT * FROM chatbot.tbl_user WHERE id = "+id+";";
 		Query query = entityManager.createNativeQuery(sql, User.class);
 		return query.getResultList();
 	}
 
 	public List<User> findPartner(String partnerGender, String userGender) {
-		String sql = "SELECT * FROM vannoichatbot.tbl_user WHERE status = 'FINDING' and gender = '" + partnerGender + "';";
+		String sql = "SELECT * FROM chatbot.tbl_user WHERE status = 'FINDING' and gender = '" + partnerGender + "';";
 		Query query = entityManager.createNativeQuery(sql, User.class);
 		return query.getResultList();
 	}

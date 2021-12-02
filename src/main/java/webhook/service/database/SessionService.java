@@ -44,7 +44,7 @@ public class SessionService {
 	}
 	
 	public List<Session> findUserSession(String strId) {
-		String sql = "SELECT * FROM vannoichatbot.tbl_session WHERE l_partner = '"+ strId +"' or r_partner = '"+ strId +"';";
+		String sql = "SELECT * FROM chatbot.tbl_session WHERE l_partner = '"+ strId +"' or r_partner = '"+ strId +"';";
 		Query query = entityManager.createNativeQuery(sql, Session.class);
 		return query.getResultList();
 	}
